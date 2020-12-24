@@ -5,11 +5,14 @@
   "main": "main.js",
   "scripts": {
     "build": "tsc",
-    "watch": "tsc --watch"
+    "watch": "tsc --watch",
+    "build-release": "tsc --outFile \"Open On Github.novaextension/Scripts/main.js\""
   },
   "author": "th3james (James Cox-Morton)",
   "license": "ISC",
   "devDependencies": {
+    "@types/node": "^14.14.16",
+    "@types/nova-editor-node": "^3.0.0",
     "typescript": "^4.1.3"
   }
 }
