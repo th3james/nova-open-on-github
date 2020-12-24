@@ -1,0 +1,15 @@
+{
+  "name": "nova-open-in-github",
+  "version": "1.0.0",
+  "description": "Nova extension to open the current editor window on GitHub",
+  "main": "main.js",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc --watch"
+  },
+  "author": "th3james (James Cox-Morton)",
+  "license": "ISC",
+  "devDependencies": {
+    "typescript": "^4.1.3"
+  }
+}

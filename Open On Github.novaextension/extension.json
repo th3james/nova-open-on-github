@@ -1,0 +1,40 @@
+{
+    "identifier": "org.OpenOnGithub",
+    "name": "Open On Github",
+    "organization": "MyOrganization",
+    "description": "Lorem ipsum, dolor sit amet.",
+    "version": "1.0",
+    "categories": ["commands"],
+    
+    "main": "main.js",
+    
+    "activationEvents": [
+        "onLanguage:html"
+    ],
+    
+    "entitlements": {
+        "filesystem": "readwrite", "process": true
+    },
+    
+    "commands": {
+        "extensions": [
+            {
+                "title": "Open URL",
+                "command": "open-on-github.openURL"
+            },
+            {
+                "title": "Run External Tool",
+                "command": "open-on-github.runExternalTool"
+            }
+        ]
+    },
+    
+    "config": [
+        {
+            "key": "open-on-github.foobar",
+            "title": "Foo the bar",
+            "type": "boolean",
+            "default": false
+        }
+    ]
+}
