@@ -6,7 +6,6 @@
     "target": "es5",
     "sourceMap": true,
     "rootDir": "./src",
-    "outDir": "./build",
 
     /* Strict Type-Checking Options */
     "strict": true /* Enable all strict type-checking options. */,
