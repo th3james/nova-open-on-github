@@ -10,7 +10,7 @@ import { GithubOpener } from "./github-opener";
 // Get origin URL
 // git config --get remote.origin.url
 
-test("Integration: GithubOpener given a file under source control opens it on github", (t) => {
+test("Integration: GithubOpener given a file under source control opens it on github", () => {
   // Mock state
   const gitBinary = "/usr/bin/git";
   const currentGitRoot = "/Users/cool-guy/nice-project";

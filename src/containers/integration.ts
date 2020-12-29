@@ -1,6 +1,6 @@
 import "reflect-metadata";
 
-import {container} from "tsyringe";
+import { container } from "tsyringe";
 
 const integrationContainer = container;
 

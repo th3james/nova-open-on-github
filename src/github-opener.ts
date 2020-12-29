@@ -8,8 +8,5 @@ export class GithubOpener {
 
   openCurrentFileOnGithub(): void {
     const currentFile = this.ideContext.getCurrentFile();
-    //     const gitRemote = this.gitContext.getGitRemote(currentFile);
-    //
-    //     const githubUrl = GithubUrlBuilder().build(gitRemote, currentFile);
   }
 }
