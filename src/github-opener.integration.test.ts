@@ -5,6 +5,7 @@ import { integrationContainer } from "./containers/integration";
 import { UrlOpener } from "./url_actions/url_opener";
 import { IdeContext } from "./ide_context/ide_context";
 import { GitCommandRunner } from "./git/git_command_runner";
+import { GithubOpener } from "./github-opener";
 
 // Get repo base URL
 // git rev-parse --show-toplevel
@@ -36,7 +37,7 @@ test("Integration: GithubOpener given a file under source control opens it on gi
     useValue: mockUrlOpener,
   });
 
-  const githubOpener = integrationContainer.resolve("GithubOpener");
+  const githubOpener = integrationContainer.resolve(GithubOpener);
   githubOpener.openCurrentFileOnGithub();
 
   const expectedUrl = `https://github.com/cool-guy/nice-project/blob/master/${currentRelativeFilePath}`;

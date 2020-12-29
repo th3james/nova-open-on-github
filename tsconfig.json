@@ -23,6 +23,7 @@
 
     /* Experimental Options */
     "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
 
     /* Advanced Options */
     "skipLibCheck": true /* Skip type checking of declaration files. */,
