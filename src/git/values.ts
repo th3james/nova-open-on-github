@@ -1,1 +1,3 @@
-export class GitRemote {}
+export class GitRemote {
+  constructor(readonly name: string) {}
+}

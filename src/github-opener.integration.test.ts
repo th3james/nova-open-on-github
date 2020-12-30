@@ -1,5 +1,5 @@
 import test from "ava";
-import { mock, verify, when } from "ts-mockito";
+import { instance, mock, verify, when } from "ts-mockito";
 
 import { integrationContainer } from "./containers/integration";
 import { UrlOpener } from "./url_actions/url_opener";
@@ -10,7 +10,7 @@ import { GithubOpener } from "./github-opener";
 // Get origin URL
 // git config --get remote.origin.url
 
-test("Integration: GithubOpener given a file under source control opens it on github", () => {
+test("Integration: GithubOpener given a file under source control opens it on github", (t) => {
   // Mock state
   const gitBinary = "/usr/bin/git";
   const currentGitRoot = "/Users/cool-guy/nice-project";
@@ -23,7 +23,7 @@ test("Integration: GithubOpener given a file under source control opens it on gi
   const mockIdeContext = mock<IdeContext>();
   when(mockIdeContext.getCurrentFile()).thenReturn(currentFilePath);
   integrationContainer.register("ideContext", {
-    useValue: mockIdeContext,
+    useValue: instance(mockIdeContext),
   });
 
   const mockProcessRunner = mock<ProcessRunner>();
@@ -42,12 +42,12 @@ test("Integration: GithubOpener given a file under source control opens it on gi
     )
   ).thenReturn(gitOrigin);
   integrationContainer.register("processRunner", {
-    useValue: mockProcessRunner,
+    useValue: instance(mockProcessRunner),
   });
 
   const mockUrlOpener = mock<UrlOpener>();
   integrationContainer.register("urlOpener", {
-    useValue: mockUrlOpener,
+    useValue: instance(mockUrlOpener),
   });
 
   const githubOpener = integrationContainer.resolve(GithubOpener);
@@ -56,4 +56,6 @@ test("Integration: GithubOpener given a file under source control opens it on gi
   const expectedUrl = `https://github.com/cool-guy/nice-project/blob/master/${currentRelativeFileDir}/${currentRelativeFileName}`;
 
   verify(mockUrlOpener.openUrl(expectedUrl)).once();
+
+  t.pass();
 });
