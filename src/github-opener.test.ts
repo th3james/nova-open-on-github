@@ -1,7 +1,7 @@
 import test from "ava";
 import { anything, capture, instance, mock, verify, when } from "ts-mockito";
 
-import { isolatedContainer } from "./containers/isolated";
+import { spawnIsolatedContainer } from "./containers/isolated";
 import { GitContext } from "./git/git_context";
 import { GitRemote } from "./git/values";
 import { GithubOpener } from "./github-opener";
@@ -10,23 +10,24 @@ import { IdeContext } from "./ide_context/ide_context";
 import { UrlOpener } from "./url_actions/url_opener";
 
 test("GithubOpener.openCurrentFile with a valid file and branch opens the correct URL", (t) => {
+  const container = spawnIsolatedContainer();
   const gitRemote = new GitRemote("hat");
   const currentFilePath = "/some/path.txt";
 
   const mockIdeContext = mock<IdeContext>();
   when(mockIdeContext.getCurrentFile()).thenReturn(currentFilePath);
-  isolatedContainer.register("ideContext", {
+  container.register("ideContext", {
     useValue: instance(mockIdeContext),
   });
 
   const mockGitContext = mock(GitContext);
   when(mockGitContext.getRemote(currentFilePath)).thenReturn(gitRemote);
-  isolatedContainer.register("gitContext", {
+  container.register("gitContext", {
     useValue: instance(mockGitContext),
   });
 
   const mockUrlOpener = mock<UrlOpener>();
-  isolatedContainer.register("urlOpener", {
+  container.register("urlOpener", {
     useValue: instance(mockUrlOpener),
   });
 
@@ -35,7 +36,7 @@ test("GithubOpener.openCurrentFile with a valid file and branch opens the correc
     currentFilePath
   );
 
-  const githubOpener = isolatedContainer.resolve(GithubOpener);
+  const githubOpener = container.resolve(GithubOpener);
 
   githubOpener.openCurrentFileOnGithub();
 

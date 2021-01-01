@@ -1,7 +1,15 @@
-import { GitRemote } from "./values";
+import { injectable, inject } from "tsyringe";
 
+import { GitRemote } from "./values";
+import { ProcessRunner } from "../process_runner/process_runner";
+
+@injectable()
 export class GitContext {
+  constructor(@inject("ProcessRunner") private processRunner: ProcessRunner) {}
+
   getRemote(filePath: string): GitRemote {
-    throw new Error("Not implemented");
+    const remoteString = this.processRunner.runCommand("YOLO", [""], "");
+
+    return GitRemote.parseFromString(remoteString);
   }
 }

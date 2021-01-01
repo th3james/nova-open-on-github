@@ -1,7 +1,8 @@
 import "reflect-metadata";
 
 import { container } from "tsyringe";
+import type { DependencyContainer } from "tsyringe";
 
-const isolatedContainer = container;
-
-export { isolatedContainer };
+export function spawnIsolatedContainer(): DependencyContainer {
+  return container.createChildContainer();
+}
