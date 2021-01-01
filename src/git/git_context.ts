@@ -5,7 +5,7 @@ import { ProcessRunner } from "../process_runner/process_runner";
 
 @injectable()
 export class GitContext {
-  constructor(@inject("ProcessRunner") private processRunner: ProcessRunner) {}
+  constructor(@inject("processRunner") private processRunner: ProcessRunner) {}
 
   getRemote(filePath: string): GitRemote {
     const remoteString = this.processRunner.runCommand("YOLO", [""], "");

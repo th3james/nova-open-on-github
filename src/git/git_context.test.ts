@@ -22,7 +22,7 @@ test("GitContext.getRemote for a file in a valid github repo queries git and par
       fileDir
     )
   ).thenReturn(rawRemoteString);
-  container.register("ProcessRunner", {
+  container.register("processRunner", {
     useValue: instance(mockProcessRunner),
   });
 
