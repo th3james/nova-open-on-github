@@ -1,6 +1,6 @@
 import { injectable, inject } from "tsyringe";
 
-import { GitRemote } from "./values";
+import { GitRemote } from "./git_remote";
 import { ProcessRunner } from "../process_runner/process_runner";
 
 @injectable()

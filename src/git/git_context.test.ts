@@ -3,7 +3,7 @@ import { instance, mock, when } from "ts-mockito";
 
 import { spawnIsolatedContainer } from "../containers/isolated";
 import { GitContext } from "./git_context";
-import { GitRemote } from "./values";
+import { GitRemote } from "./git_remote";
 import { ProcessRunner } from "../process_runner/process_runner";
 
 test("GitContext.getRemote for a file in a valid github repo queries git and parses a remote", (t) => {

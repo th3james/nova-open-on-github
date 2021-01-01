@@ -3,7 +3,7 @@ import { anything, capture, instance, mock, verify, when } from "ts-mockito";
 
 import { spawnIsolatedContainer } from "./containers/isolated";
 import { GitContext } from "./git/git_context";
-import { GitRemote } from "./git/values";
+import { GitRemote } from "./git/git_remote";
 import { GithubOpener } from "./github-opener";
 import { GithubUrlBuilder } from "./github_url_builder/github_url_builder";
 import { IdeContext } from "./ide_context/ide_context";
