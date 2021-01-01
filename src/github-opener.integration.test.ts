@@ -16,8 +16,7 @@ test("Integration: GithubOpener given a file under source control opens it on gi
   const currentGitRoot = "/Users/cool-guy/nice-project";
   const currentRelativeFileDir = "sub/dir";
   const currentRelativeFileName = "whatever.json";
-  const currentFilePath =
-    "${currentGitRoot}/${currentRelativeFileDir}/${currentRelativeFileName}";
+  const currentFilePath = `${currentGitRoot}/${currentRelativeFileDir}/${currentRelativeFileName}`;
   const gitOrigin = "git@github.com:cool-guy/nice-project.git";
 
   const mockIdeContext = mock<IdeContext>();
