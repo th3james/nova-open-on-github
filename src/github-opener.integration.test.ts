@@ -1,5 +1,5 @@
 import test from "ava";
-import { instance, mock, verify, when } from "ts-mockito";
+import { capture, instance, mock, verify, when } from "ts-mockito";
 
 import { integrationContainer } from "./containers/integration";
 import { UrlOpener } from "./url_actions/url_opener";
@@ -54,6 +54,7 @@ test("Integration: GithubOpener given a file under source control opens it on gi
 
   const expectedUrl = `https://github.com/cool-guy/nice-project/blob/master/${currentRelativeFileDir}/${currentRelativeFileName}`;
 
+  console.log(capture(mockUrlOpener.openUrl).last());
   verify(mockUrlOpener.openUrl(expectedUrl)).once();
 
   t.pass();
