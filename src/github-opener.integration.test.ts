@@ -50,6 +50,12 @@ test("Integration: GithubOpener given a file under source control opens it on gi
     useValue: instance(mockUrlOpener),
   });
 
+  const mockExtensionConfig = mock<ExtensionConfig>();
+  when(mockExtensionConfig.getGitBinaryPath()).thenReturn(gitBinary);
+  integrationContainer.register("extensionConfig", {
+    useValue: instance(mockExtensionConfig),
+  });
+
   const githubOpener = integrationContainer.resolve(GithubOpener);
   githubOpener.openCurrentFileOnGithub();
 
