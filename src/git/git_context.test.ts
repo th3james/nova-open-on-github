@@ -1,5 +1,13 @@
 import test from "ava";
-import { anything, capture, instance, mock, verify, when } from "ts-mockito";
+import {
+  anything,
+  capture,
+  deepEqual,
+  instance,
+  mock,
+  verify,
+  when,
+} from "ts-mockito";
 
 import { spawnIsolatedContainer } from "../containers/isolated";
 import { GitContext } from "./git_context";
@@ -25,12 +33,12 @@ test("GitContext.getRemote for a file in a valid github repo queries git and par
 
   const mockProcessRunner = mock<ProcessRunner>();
   when(
-    mockProcessRunner.runCommand(gitBinaryPath, anything(), fileDir)
-  ).thenCall((_, actualArgs) => {
-    // ts-mockito can't handle matching arrays
-    t.deepEqual(actualArgs, ["config", "--get", "remote.origin.url"]);
-    return rawRemoteString;
-  });
+    mockProcessRunner.runCommand(
+      gitBinaryPath,
+      deepEqual(["config", "--get", "remote.origin.url"]),
+      fileDir
+    )
+  ).thenReturn(rawRemoteString);
   container.register("processRunner", {
     useValue: instance(mockProcessRunner),
   });

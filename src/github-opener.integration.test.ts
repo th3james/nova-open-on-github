@@ -1,8 +1,9 @@
 import test from "ava";
-import { capture, instance, mock, verify, when } from "ts-mockito";
+import { capture, deepEqual, instance, mock, verify, when } from "ts-mockito";
 
 import { integrationContainer } from "./containers/integration";
 import { UrlOpener } from "./url_actions/url_opener";
+import { ExtensionConfig } from "./extension_config/extension_config";
 import { IdeContext } from "./ide_context/ide_context";
 import { ProcessRunner } from "./process_runner/process_runner";
 import { GithubOpener } from "./github-opener";
@@ -29,14 +30,14 @@ test("Integration: GithubOpener given a file under source control opens it on gi
   when(
     mockProcessRunner.runCommand(
       gitBinary,
-      ["rev-parse", "--show-toplevel"],
+      deepEqual(["rev-parse", "--show-toplevel"]),
       `${currentGitRoot}/${currentRelativeFileDir}`
     )
   ).thenReturn(currentGitRoot);
   when(
     mockProcessRunner.runCommand(
       gitBinary,
-      ["config", "--get", "remote.origin.url"],
+      deepEqual(["config", "--get", "remote.origin.url"]),
       `${currentGitRoot}/${currentRelativeFileDir}`
     )
   ).thenReturn(gitOrigin);
