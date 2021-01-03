@@ -1,14 +1,6 @@
 import "reflect-metadata";
 import test from "ava";
-import {
-  anything,
-  capture,
-  deepEqual,
-  instance,
-  mock,
-  verify,
-  when,
-} from "ts-mockito";
+import { deepEqual, instance, mock, when } from "ts-mockito";
 
 import { GitContext } from "./git_context";
 import { GitRemote } from "./git_remote";
