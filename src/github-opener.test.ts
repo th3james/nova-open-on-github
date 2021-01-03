@@ -43,3 +43,25 @@ test("GithubOpener.openCurrentFile with a valid file and branch opens the correc
   verify(mockUrlOpener.openUrl(expectedUrl)).once();
   t.pass();
 });
+
+test("GithubOpener.openCurrentFile without a current file logs it does nothing", (t) => {
+  const container = spawnIsolatedContainer();
+
+  const mockIdeContext = mock<IdeContext>();
+  when(mockIdeContext.getCurrentFile()).thenReturn(null);
+  container.register("ideContext", {
+    useValue: instance(mockIdeContext),
+  });
+  container.register("gitContext", {
+    useValue: instance(mock<GitContext>()),
+  });
+  container.register("urlOpener", {
+    useValue: instance(mock<UrlOpener>()),
+  });
+
+  const githubOpener = container.resolve(GithubOpener);
+
+  githubOpener.openCurrentFileOnGithub();
+
+  t.pass();
+});

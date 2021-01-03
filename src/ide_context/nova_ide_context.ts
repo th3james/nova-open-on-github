@@ -1,7 +1,13 @@
 import { IdeContext } from "./ide_context";
 
+export interface Nova {
+  workspace: Workspace;
+}
+
 export class NovaIdeContext implements IdeContext {
-  getCurrentFile(): string {
-    throw new Error("not implemented");
+  constructor(private nova: Nova) {}
+
+  getCurrentFile(): string | null {
+    return this.nova.workspace.activeTextEditor.document.path;
   }
 }

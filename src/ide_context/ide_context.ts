@@ -1,3 +1,3 @@
 export interface IdeContext {
-    getCurrentFile(): string
+  getCurrentFile(): string | null;
 }

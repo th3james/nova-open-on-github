@@ -8,7 +8,7 @@ import { spawnCommonContainer } from "./common";
 
 export const productionContainer = spawnCommonContainer();
 
-const novaIdeContext = new NovaIdeContext();
+const novaIdeContext = new NovaIdeContext(nova);
 productionContainer.register("ideContext", { useValue: novaIdeContext });
 
 const novaProcessRunner = new NovaProcessRunner();
