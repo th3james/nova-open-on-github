@@ -2,14 +2,11 @@ import "reflect-metadata";
 
 import { container } from "tsyringe";
 
-import { GitContext } from "../git/git_context";
+import { spawnCommonContainer } from "./common";
 import { NodePathLib } from "../path_lib/node_path_lib";
 
-const integrationContainer = container;
+const integrationContainer = spawnCommonContainer();
 
-integrationContainer.register("gitContext", {
-  useClass: GitContext,
-});
 container.register("pathLib", { useValue: new NodePathLib() });
 
 export { integrationContainer };

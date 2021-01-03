@@ -3,9 +3,9 @@ import { NovaIdeContext } from "../ide_context/nova_ide_context";
 import { NovaProcessRunner } from "../process_runner/nova_process_runner";
 import { NovaUrlOpener } from "../url_actions/nova_url_opener";
 
-import { integrationContainer } from "./integration";
+import { spawnCommonContainer } from "./common";
 
-export const productionContainer = integrationContainer.createChildContainer();
+export const productionContainer = spawnCommonContainer();
 
 const novaIdeContext = new NovaIdeContext();
 productionContainer.register("ideContext", { useValue: novaIdeContext });
