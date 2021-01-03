@@ -61,6 +61,7 @@ test("Integration: GithubOpener given a file under source control opens it on gi
 
   const expectedUrl = `https://github.com/cool-guy/nice-project/blob/master/${currentRelativeFileDir}/${currentRelativeFileName}`;
 
+  console.log("Open URL called with:");
   console.log(capture(mockUrlOpener.openUrl).last());
   verify(mockUrlOpener.openUrl(expectedUrl)).once();
 
