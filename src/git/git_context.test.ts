@@ -1,3 +1,4 @@
+import "reflect-metadata";
 import test from "ava";
 import {
   anything,
@@ -9,7 +10,6 @@ import {
   when,
 } from "ts-mockito";
 
-import { spawnIsolatedContainer } from "../containers/isolated";
 import { GitContext } from "./git_context";
 import { GitRemote } from "./git_remote";
 import { ExtensionConfig } from "../extension_config/extension_config";
@@ -24,15 +24,8 @@ test("GitContext.getRemote for a file in a valid github repo queries git and par
 
   const rawRemoteString = `git@github.com:timmy/robot.git`;
 
-  const container = spawnIsolatedContainer();
-
-  container.register("pathLib", { useValue: new NodePathLib() });
-
   const mockExtensionConfig = mock<ExtensionConfig>();
   when(mockExtensionConfig.getGitBinaryPath()).thenReturn(gitBinaryPath);
-  container.register("extensionConfig", {
-    useValue: instance(mockExtensionConfig),
-  });
 
   const mockProcessRunner = mock<ProcessRunner>();
   when(
@@ -42,11 +35,12 @@ test("GitContext.getRemote for a file in a valid github repo queries git and par
       fileDir
     )
   ).thenReturn(rawRemoteString);
-  container.register("processRunner", {
-    useValue: instance(mockProcessRunner),
-  });
 
-  const gitContext = container.resolve(GitContext);
+  const gitContext = new GitContext(
+    instance(mockProcessRunner),
+    instance(mockExtensionConfig),
+    new NodePathLib()
+  );
   const result = gitContext.getRemote(filePath);
 
   t.deepEqual(result, GitRemote.parseFromString(rawRemoteString));
