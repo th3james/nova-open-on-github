@@ -14,6 +14,7 @@ import { GitContext } from "./git_context";
 import { GitRemote } from "./git_remote";
 import { ExtensionConfig } from "../extension_config/extension_config";
 import { ProcessRunner } from "../process_runner/process_runner";
+import { NodePathLib } from "../path_lib/node_path_lib";
 
 test("GitContext.getRemote for a file in a valid github repo queries git and parses a remote", (t) => {
   const gitBinaryPath = "/usr/bin/gitz";
@@ -24,6 +25,8 @@ test("GitContext.getRemote for a file in a valid github repo queries git and par
   const rawRemoteString = `git@github.com:timmy/robot.git`;
 
   const container = spawnIsolatedContainer();
+
+  container.register("pathLib", { useValue: new NodePathLib() });
 
   const mockExtensionConfig = mock<ExtensionConfig>();
   when(mockExtensionConfig.getGitBinaryPath()).thenReturn(gitBinaryPath);

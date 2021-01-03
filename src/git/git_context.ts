@@ -2,20 +2,23 @@ import { injectable, inject } from "tsyringe";
 
 import { GitRemote } from "./git_remote";
 import { ExtensionConfig } from "../extension_config/extension_config";
+import { PathLib } from "../path_lib/path_lib";
 import { ProcessRunner } from "../process_runner/process_runner";
 
 @injectable()
 export class GitContext {
   constructor(
     @inject("processRunner") private processRunner: ProcessRunner,
-    @inject("extensionConfig") private extensionConfig: ExtensionConfig
+    @inject("extensionConfig") private extensionConfig: ExtensionConfig,
+    @inject("pathLib") private pathLib: PathLib
   ) {}
 
   getRemote(filePath: string): GitRemote {
+    const fileDir = this.pathLib.dirname(filePath);
     const remoteString = this.processRunner.runCommand(
       this.extensionConfig.getGitBinaryPath(),
       ["config", "--get", "remote.origin.url"],
-      "/some/where"
+      fileDir
     );
 
     return GitRemote.parseFromString(remoteString);
