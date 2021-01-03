@@ -1,5 +1,6 @@
 import { NovaExtensionConfig } from "../extension_config/nova_extension_config";
 import { NovaIdeContext } from "../ide_context/nova_ide_context";
+import { NovaPathLib } from "../path_lib/nova_path_lib";
 import { NovaProcessRunner } from "../process_runner/nova_process_runner";
 import { NovaUrlOpener } from "../url_actions/nova_url_opener";
 
@@ -21,4 +22,8 @@ productionContainer.register("extensionConfig", {
 const novaUrlOpener = new NovaUrlOpener();
 productionContainer.register("urlOpener", {
   useValue: novaUrlOpener,
+});
+
+productionContainer.register("pathLib", {
+  useValue: new NovaPathLib(nova.path),
 });
