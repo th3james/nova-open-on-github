@@ -22,7 +22,7 @@ productionContainer.register("extensionConfig", {
   useValue: novaExtensionConfig,
 });
 
-const novaUrlOpener = new NovaUrlOpener();
+const novaUrlOpener = new NovaUrlOpener(nova);
 productionContainer.register("urlOpener", {
   useValue: novaUrlOpener,
 });
