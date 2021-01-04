@@ -13,5 +13,6 @@ const githubOpener = productionContainer.resolve(GithubOpener);
 
 nova.commands.register(
   "open-on-github.openCurrentFile",
-  githubOpener.openCurrentFileOnGithub.bind(githubOpener)
+  githubOpener.openCurrentFileOnGithub,
+  githubOpener
 );
