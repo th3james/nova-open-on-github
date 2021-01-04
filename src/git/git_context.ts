@@ -13,9 +13,9 @@ export class GitContext {
     @inject("pathLib") private pathLib: PathLib
   ) {}
 
-  getRemote(filePath: string): GitRemote {
+  async getRemote(filePath: string): Promise<GitRemote> {
     const fileDir = this.pathLib.dirname(filePath);
-    const remoteString = this.processRunner.runCommand(
+    const remoteString = await this.processRunner.runCommand(
       this.extensionConfig.getGitBinaryPath(),
       ["config", "--get", "remote.origin.url"],
       fileDir

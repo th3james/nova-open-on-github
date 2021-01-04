@@ -9,7 +9,7 @@ import { GithubUrlBuilder } from "./github_url_builder/github_url_builder";
 import { IdeContext } from "./ide_context/ide_context";
 import { UrlOpener } from "./url_actions/url_opener";
 
-test("GithubOpener.openCurrentFile with a valid file and branch opens the correct URL", (t) => {
+test("GithubOpener.openCurrentFile with a valid file and branch opens the correct URL", async (t) => {
   const gitRemote = new GitRemote("hat");
   const currentFilePath = "/some/path.txt";
 
@@ -17,7 +17,7 @@ test("GithubOpener.openCurrentFile with a valid file and branch opens the correc
   when(mockIdeContext.getCurrentFile()).thenReturn(currentFilePath);
 
   const mockGitContext = mock(GitContext);
-  when(mockGitContext.getRemote(currentFilePath)).thenReturn(gitRemote);
+  when(mockGitContext.getRemote(currentFilePath)).thenResolve(gitRemote);
 
   const mockUrlOpener = mock<UrlOpener>();
 
@@ -32,7 +32,7 @@ test("GithubOpener.openCurrentFile with a valid file and branch opens the correc
     instance(mockUrlOpener)
   );
 
-  githubOpener.openCurrentFileOnGithub();
+  await githubOpener.openCurrentFileOnGithub();
 
   verify(mockUrlOpener.openUrl(expectedUrl)).once();
   t.pass();

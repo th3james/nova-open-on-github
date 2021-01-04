@@ -8,7 +8,7 @@ import { ExtensionConfig } from "../extension_config/extension_config";
 import { ProcessRunner } from "../process_runner/process_runner";
 import { NodePathLib } from "../path_lib/node_path_lib";
 
-test("GitContext.getRemote for a file in a valid github repo queries git and parses a remote", (t) => {
+test("GitContext.getRemote for a file in a valid github repo queries git and parses a remote", async (t) => {
   const gitBinaryPath = "/usr/bin/gitz";
   const fileDir = "/some/where";
   const fileName = "file.txt";
@@ -26,14 +26,14 @@ test("GitContext.getRemote for a file in a valid github repo queries git and par
       deepEqual(["config", "--get", "remote.origin.url"]),
       fileDir
     )
-  ).thenReturn(rawRemoteString);
+  ).thenResolve(rawRemoteString);
 
   const gitContext = new GitContext(
     instance(mockProcessRunner),
     instance(mockExtensionConfig),
     new NodePathLib()
   );
-  const result = gitContext.getRemote(filePath);
+  const result = await gitContext.getRemote(filePath);
 
   t.deepEqual(result, GitRemote.parseFromString(rawRemoteString));
 });

@@ -13,12 +13,13 @@ export class GithubOpener {
     @inject("urlOpener") private urlOpener: UrlOpener
   ) {}
 
-  openCurrentFileOnGithub(): void {
+  async openCurrentFileOnGithub(): Promise<void> {
     const currentFile = this.ideContext.getCurrentFile();
     if (currentFile === null) {
+      console.log("No current file!?");
       return;
     }
-    const gitRemote = this.gitContext.getRemote(currentFile);
+    const gitRemote = await this.gitContext.getRemote(currentFile);
 
     const url = new GithubUrlBuilder().buildUrl(gitRemote, currentFile);
     this.urlOpener.openUrl(url);
