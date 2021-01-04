@@ -7,10 +7,15 @@ export interface Nova {
 export class NovaUrlOpener implements UrlOpener {
   constructor(private nova: Nova) {}
 
-  openUrl(url: string): void {
-    console.log("opening url");
-    console.log(url);
-    this.nova.openURL(url);
-    console.log("opened");
+  openUrl(url: string): Promise<void> {
+    return new Promise((resolve, reject) => {
+      this.nova.openURL(url, (success) => {
+        if (success) {
+          resolve();
+        } else {
+          reject(new Error(`Couldn't open URL ${url}`));
+        }
+      });
+    });
   }
 }

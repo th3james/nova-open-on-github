@@ -1,3 +1,3 @@
 export interface UrlOpener {
-  openUrl(url: string): void;
+  openUrl(url: string): Promise<void>;
 }
