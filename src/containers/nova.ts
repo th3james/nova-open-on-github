@@ -1,3 +1,5 @@
+import { ConsoleLogger } from "../logging/console_logger";
+
 import { NovaExtensionConfig } from "../extension_config/nova_extension_config";
 import { NovaIdeContext } from "../ide_context/nova_ide_context";
 import { NovaPathLib } from "../path_lib/nova_path_lib";
@@ -30,3 +32,4 @@ productionContainer.register("urlOpener", {
 productionContainer.register("pathLib", {
   useValue: new NovaPathLib(nova.path),
 });
+productionContainer.register("logger", { useValue: new ConsoleLogger() });
