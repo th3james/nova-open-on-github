@@ -11,7 +11,7 @@ import { IdeContext } from "./ide_context/ide_context";
 import { UrlOpener } from "./url_actions/url_opener";
 
 test("GithubOpener.openCurrentFile with a valid file and branch opens the correct URL", async (t) => {
-  const gitRemote = new GitRemote("hat");
+  const gitRemote = new GitRemote("hat", "boat");
   const currentFilePath = "/some/path.txt";
 
   const mockIdeContext = mock<IdeContext>();
@@ -72,7 +72,9 @@ test("GithubOpener.openCurrentFile given an invalid url logs the error", async (
   when(mockIdeContext.getCurrentFile()).thenReturn("whatever");
 
   const mockGitContext = mock<GitContext>();
-  when(mockGitContext.getRemote("whatever")).thenResolve(new GitRemote("a"));
+  when(mockGitContext.getRemote("whatever")).thenResolve(
+    new GitRemote("a", "b")
+  );
 
   const mockUrlOpener = mock<UrlOpener>();
   when(mockUrlOpener.openUrl(anything())).thenReject(theError);
