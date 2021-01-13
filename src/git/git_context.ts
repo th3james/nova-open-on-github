@@ -25,11 +25,13 @@ export class GitContext {
   }
 
   async chrootFilePath(filePath: string): Promise<string> {
-    const gitRoot = await this.processRunner.runCommand(
-      this.extensionConfig.getGitBinaryPath(),
-      ["rev-parse", "--show-toplevel"],
-      this.pathLib.dirname(filePath)
-    );
+    const gitRoot = (
+      await this.processRunner.runCommand(
+        this.extensionConfig.getGitBinaryPath(),
+        ["rev-parse", "--show-toplevel"],
+        this.pathLib.dirname(filePath)
+      )
+    ).trim();
     return filePath.split(gitRoot + "/")[1];
   }
 }

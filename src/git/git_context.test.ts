@@ -39,7 +39,7 @@ test("GitContext.getRemote for a file in a valid github repo queries git and par
 });
 
 test("GitContext.chrootFilePath given a filepath in a git repo it chroots it to the git root", async (t) => {
-  const gitRoot = "/some/path";
+  const gitRoot = "/Volumes/Macintosh HD/Users/cool-dude/code/nice-project";
   const filePathInGit = "whatever/file.lol";
   const fullFilePath = `${gitRoot}/${filePathInGit}`;
   const gitBinaryPath = "/bin/git";
@@ -56,7 +56,7 @@ test("GitContext.chrootFilePath given a filepath in a git repo it chroots it to 
       deepEqual(["rev-parse", "--show-toplevel"]),
       pathLib.dirname(fullFilePath)
     )
-  ).thenResolve(gitRoot);
+  ).thenResolve(gitRoot + "\n");
 
   const gitContext = new GitContext(
     instance(mockProcessRunner),
