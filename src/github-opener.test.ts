@@ -12,6 +12,7 @@ import { UrlOpener } from "./url_actions/url_opener";
 
 test("GithubOpener.openCurrentFile with a valid file and branch opens the correct URL", async (t) => {
   const gitRemote = new GitRemote("hat", "boat");
+  const gitBranch = "some-feature";
   const currentFilePath = "/some/repo/some/path.txt";
   const chrootedFilePath = "/some/path.txt";
 
@@ -28,6 +29,7 @@ test("GithubOpener.openCurrentFile with a valid file and branch opens the correc
 
   const expectedUrl = new GithubUrlBuilder().buildUrl(
     gitRemote,
+    gitBranch,
     chrootedFilePath
   );
 

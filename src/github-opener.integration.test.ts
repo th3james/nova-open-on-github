@@ -19,6 +19,7 @@ test("Integration: GithubOpener given a file under source control opens it on gi
   const currentRelativeFileName = "whatever.json";
   const currentFilePath = `${currentGitRoot}/${currentRelativeFileDir}/${currentRelativeFileName}`;
   const gitOrigin = "git@github.com:cool-guy/nice-project.git";
+  const branchName = "some-feature-branch";
 
   const mockIdeContext = mock<IdeContext>();
   when(mockIdeContext.getCurrentFile()).thenReturn(currentFilePath);
@@ -34,6 +35,14 @@ test("Integration: GithubOpener given a file under source control opens it on gi
       `${currentGitRoot}/${currentRelativeFileDir}`
     )
   ).thenResolve(currentGitRoot + "\n");
+  when(
+    mockProcessRunner.runCommand(
+      gitBinary,
+      deepEqual(["rev-parse", "--abbrev-ref", "HEAD"]),
+      `${currentGitRoot}/${currentRelativeFileDir}`
+    )
+  ).thenResolve(branchName);
+
   when(
     mockProcessRunner.runCommand(
       gitBinary,
@@ -59,7 +68,7 @@ test("Integration: GithubOpener given a file under source control opens it on gi
   const githubOpener = integrationContainer.resolve(GithubOpener);
   await githubOpener.openCurrentFileOnGithub();
 
-  const expectedUrl = `https://github.com/cool-guy/nice-project/blob/master/${currentRelativeFileDir}/${currentRelativeFileName}`;
+  const expectedUrl = `https://github.com/cool-guy/nice-project/blob/${branchName}/${currentRelativeFileDir}/${currentRelativeFileName}`;
 
   console.log("Open URL called with:");
   console.log(capture(mockUrlOpener.openUrl).last());
