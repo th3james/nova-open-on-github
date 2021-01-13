@@ -23,4 +23,13 @@ export class GitContext {
 
     return GitRemote.parseFromString(remoteString);
   }
+
+  async chrootFilePath(filePath: string): Promise<String> {
+    const gitRoot = await this.processRunner.runCommand(
+      this.extensionConfig.getGitBinaryPath(),
+      ["rev-parse", "--show-toplevel"],
+      this.pathLib.dirname(filePath)
+    );
+    return filePath.split(gitRoot + "/")[1];
+  }
 }

@@ -37,3 +37,33 @@ test("GitContext.getRemote for a file in a valid github repo queries git and par
 
   t.deepEqual(result, GitRemote.parseFromString(rawRemoteString));
 });
+
+test("GitContext.chrootFilePath given a filepath in a git repo it chroots it to the git root", async (t) => {
+  const gitRoot = "/some/path";
+  const filePathInGit = "whatever/file.lol";
+  const fullFilePath = `${gitRoot}/${filePathInGit}`;
+  const gitBinaryPath = "/bin/git";
+
+  const pathLib = new NodePathLib();
+
+  const mockExtensionConfig = mock<ExtensionConfig>();
+  when(mockExtensionConfig.getGitBinaryPath()).thenReturn(gitBinaryPath);
+
+  const mockProcessRunner = mock<ProcessRunner>();
+  when(
+    mockProcessRunner.runCommand(
+      gitBinaryPath,
+      deepEqual(["rev-parse", "--show-toplevel"]),
+      pathLib.dirname(fullFilePath)
+    )
+  ).thenResolve(gitRoot);
+
+  const gitContext = new GitContext(
+    instance(mockProcessRunner),
+    instance(mockExtensionConfig),
+    pathLib
+  );
+  const result = await gitContext.chrootFilePath(fullFilePath);
+
+  t.deepEqual(result, filePathInGit);
+});
