@@ -21,9 +21,11 @@ export class GithubOpener {
       this.logger.logError(new Error("No current file, can't open on GitHub"));
       return;
     }
+    const chrootedFile = await this.gitContext.chrootFilePath(currentFile);
+
     const gitRemote = await this.gitContext.getRemote(currentFile);
 
-    const url = new GithubUrlBuilder().buildUrl(gitRemote, currentFile);
+    const url = new GithubUrlBuilder().buildUrl(gitRemote, chrootedFile);
     try {
       await this.urlOpener.openUrl(url);
     } catch (err) {
