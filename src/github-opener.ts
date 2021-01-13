@@ -25,7 +25,11 @@ export class GithubOpener {
 
     const gitRemote = await this.gitContext.getRemote(currentFile);
 
-    const url = new GithubUrlBuilder().buildUrl(gitRemote, chrootedFile);
+    const url = new GithubUrlBuilder().buildUrl(
+      gitRemote,
+      "master",
+      chrootedFile
+    );
     try {
       await this.urlOpener.openUrl(url);
     } catch (err) {
