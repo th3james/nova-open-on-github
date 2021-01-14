@@ -9,28 +9,22 @@ import { ProcessRunner } from "../process_runner/process_runner";
 import { NodePathLib } from "../path_lib/node_path_lib";
 
 test("GitContext.getRemote for a file in a valid github repo queries git and parses a remote", async (t) => {
-  const gitBinaryPath = "/usr/bin/gitz";
   const fileDir = "/some/where";
   const fileName = "file.txt";
   const filePath = `${fileDir}/${fileName}`;
 
   const rawRemoteString = `git@github.com:timmy/robot.git`;
 
-  const mockExtensionConfig = mock<ExtensionConfig>();
-  when(mockExtensionConfig.getGitBinaryPath()).thenReturn(gitBinaryPath);
-
-  const mockProcessRunner = mock<ProcessRunner>();
+  const mockGitCommandRunner = mock<GitCommandRunner>();
   when(
-    mockProcessRunner.runCommand(
-      gitBinaryPath,
+    mockGitCommandRunner.run(
       deepEqual(["config", "--get", "remote.origin.url"]),
       fileDir
     )
   ).thenResolve(rawRemoteString);
 
   const gitContext = new GitContext(
-    instance(mockProcessRunner),
-    instance(mockExtensionConfig),
+    instance(mockGitCommandRunner),
     new NodePathLib()
   );
   const result = await gitContext.getRemote(filePath);
