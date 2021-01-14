@@ -22,12 +22,12 @@ export class GithubOpener {
       return;
     }
     const chrootedFile = await this.gitContext.chrootFilePath(currentFile);
-
+    const branch = await this.gitContext.getCurrentBranch(currentFile);
     const gitRemote = await this.gitContext.getRemote(currentFile);
 
     const url = new GithubUrlBuilder().buildUrl(
       gitRemote,
-      "master",
+      branch,
       chrootedFile
     );
     try {

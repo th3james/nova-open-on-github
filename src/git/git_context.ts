@@ -34,4 +34,14 @@ export class GitContext {
     ).trim();
     return filePath.split(gitRoot + "/")[1];
   }
+
+  async getCurrentBranch(filePath: string): Promise<string> {
+    return (
+      await this.processRunner.runCommand(
+        this.extensionConfig.getGitBinaryPath(),
+        ["rev-parse", "--abbrev-ref", "HEAD"],
+        this.pathLib.dirname(filePath)
+      )
+    ).trim();
+  }
 }

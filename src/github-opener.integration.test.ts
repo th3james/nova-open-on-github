@@ -35,13 +35,14 @@ test("Integration: GithubOpener given a file under source control opens it on gi
       `${currentGitRoot}/${currentRelativeFileDir}`
     )
   ).thenResolve(currentGitRoot + "\n");
+
   when(
     mockProcessRunner.runCommand(
       gitBinary,
       deepEqual(["rev-parse", "--abbrev-ref", "HEAD"]),
       `${currentGitRoot}/${currentRelativeFileDir}`
     )
-  ).thenResolve(branchName);
+  ).thenResolve(branchName + "\n");
 
   when(
     mockProcessRunner.runCommand(

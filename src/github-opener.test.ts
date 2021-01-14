@@ -14,13 +14,14 @@ test("GithubOpener.openCurrentFile with a valid file and branch opens the correc
   const gitRemote = new GitRemote("hat", "boat");
   const gitBranch = "some-feature";
   const currentFilePath = "/some/repo/some/path.txt";
-  const chrootedFilePath = "/some/path.txt";
+  const chrootedFilePath = "some/path.txt";
 
   const mockIdeContext = mock<IdeContext>();
   when(mockIdeContext.getCurrentFile()).thenReturn(currentFilePath);
 
   const mockGitContext = mock(GitContext);
   when(mockGitContext.getRemote(currentFilePath)).thenResolve(gitRemote);
+  when(mockGitContext.getCurrentBranch(currentFilePath)).thenResolve(gitBranch);
   when(mockGitContext.chrootFilePath(currentFilePath)).thenResolve(
     chrootedFilePath
   );

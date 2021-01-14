@@ -65,5 +65,35 @@ test("GitContext.chrootFilePath given a filepath in a git repo it chroots it to 
   );
   const result = await gitContext.chrootFilePath(fullFilePath);
 
-  t.deepEqual(result, filePathInGit);
+  t.is(result, filePathInGit);
+});
+
+test("GitContext.getCurrentBranch given a filepath in a git repo it returns the current path", async (t) => {
+  const branchName = "hatboat";
+  const filePath = "/some/file/path.txt";
+  const gitBinary = "/git/binary";
+
+  const pathLib = new NodePathLib();
+
+  const mockExtensionConfig = mock<ExtensionConfig>();
+  when(mockExtensionConfig.getGitBinaryPath()).thenReturn(gitBinary);
+
+  const mockProcessRunner = mock<ProcessRunner>();
+  when(
+    mockProcessRunner.runCommand(
+      gitBinary,
+      deepEqual(["rev-parse", "--abbrev-ref", "HEAD"]),
+      pathLib.dirname(filePath)
+    )
+  ).thenResolve(branchName + "\n");
+
+  const gitContext = new GitContext(
+    instance(mockProcessRunner),
+    instance(mockExtensionConfig),
+    pathLib
+  );
+
+  const result = await gitContext.getCurrentBranch(filePath);
+
+  t.is(result, branchName);
 });
