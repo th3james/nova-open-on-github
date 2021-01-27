@@ -1,14 +1,14 @@
 {
-  "identifier": "org.OpenOnGithub",
+  "identifier": "th3james.OpenOnGithub",
   "name": "Open On Github",
-  "organization": "MyOrganization",
-  "description": "Lorem ipsum, dolor sit amet.",
+  "organization": "James Cox-Morton",
+  "description": "Open your nova files on Github",
   "version": "1.0",
-  "categories": ["commands"],
+  "categories": ["tasks"],
 
   "main": "main.js",
 
-  "activationEvents": ["onLanguage:html"],
+  "activationEvents": [],
 
   "entitlements": {
     "filesystem": "read",
@@ -24,12 +24,5 @@
     ]
   },
 
-  "config": [
-    {
-      "key": "open-on-github.foobar",
-      "title": "Foo the bar",
-      "type": "boolean",
-      "default": false
-    }
-  ]
+  "config": []
 }
