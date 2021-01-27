@@ -9,7 +9,7 @@ export class GitRemote {
     if (stringWithoutPrefix) {
       const [ownerName, repoName] = stringWithoutPrefix.split("/");
       if (repoName) {
-        return new GitRemote(repoName.split(".")[0], ownerName);
+        return new GitRemote(repoName.replace(/\.git\s*$/, ""), ownerName);
       }
     }
 
