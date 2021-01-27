@@ -2,9 +2,12 @@
   "identifier": "th3james.OpenOnGithub",
   "name": "Open On Github",
   "organization": "James Cox-Morton",
-  "description": "Open your nova files on Github",
+  "description": "Open Nova files on Github",
   "version": "1.0",
   "categories": ["tasks"],
+  "license": "ISC",
+  "repository": "https://github.com/th3james/nova-open-on-github",
+  "bugs": "https://github.com/th3james/nova-open-on-github/issues",
 
   "main": "main.js",
 
