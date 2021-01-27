@@ -1,22 +1,19 @@
 import { injectable, inject } from "tsyringe";
 
 import { GitRemote } from "./git_remote";
-import { ExtensionConfig } from "../extension_config/extension_config";
+import { GitCommandRunner } from "./git_command_runner";
 import { PathLib } from "../path_lib/path_lib";
-import { ProcessRunner } from "../process_runner/process_runner";
 
 @injectable()
 export class GitContext {
   constructor(
-    @inject("processRunner") private processRunner: ProcessRunner,
-    @inject("extensionConfig") private extensionConfig: ExtensionConfig,
+    @inject("gitCommandRunner") private gitCommandRunner: GitCommandRunner,
     @inject("pathLib") private pathLib: PathLib
   ) {}
 
   async getRemote(filePath: string): Promise<GitRemote> {
     const fileDir = this.pathLib.dirname(filePath);
-    const remoteString = await this.processRunner.runCommand(
-      this.extensionConfig.getGitBinaryPath(),
+    const remoteString = await this.gitCommandRunner.run(
       ["config", "--get", "remote.origin.url"],
       fileDir
     );
@@ -26,8 +23,7 @@ export class GitContext {
 
   async chrootFilePath(filePath: string): Promise<string> {
     const gitRoot = (
-      await this.processRunner.runCommand(
-        this.extensionConfig.getGitBinaryPath(),
+      await this.gitCommandRunner.run(
         ["rev-parse", "--show-toplevel"],
         this.pathLib.dirname(filePath)
       )
@@ -37,8 +33,7 @@ export class GitContext {
 
   async getCurrentBranch(filePath: string): Promise<string> {
     return (
-      await this.processRunner.runCommand(
-        this.extensionConfig.getGitBinaryPath(),
+      await this.gitCommandRunner.run(
         ["rev-parse", "--abbrev-ref", "HEAD"],
         this.pathLib.dirname(filePath)
       )
