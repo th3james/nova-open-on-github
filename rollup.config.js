@@ -4,7 +4,7 @@ import typescript from "@rollup/plugin-typescript";
 export default {
   input: "src/main.ts",
   output: {
-    dir: "Open On Github.novaextension/Scripts",
+    dir: "Open on Github.novaextension/Scripts",
     format: "cjs",
   },
   plugins: [typescript(), nodeResolve()],
