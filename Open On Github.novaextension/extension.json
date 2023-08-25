@@ -3,7 +3,7 @@
   "name": "Open on Github",
   "organization": "James Cox-Morton",
   "description": "Open Nova files on Github",
-  "version": "1.0",
+  "version": "2.0",
   "categories": ["tasks"],
   "license": "ISC",
   "repository": "https://github.com/th3james/nova-open-on-github",
