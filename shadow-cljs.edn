@@ -15,4 +15,8 @@
 
   :repl {:target :node-script
          :output-to "tmp/repl.js"
-         :main open-on-github.repl/main}}}
+         :main open-on-github.repl/main}
+
+ :test {:target :node-test
+        :output-to "tmp/test.js"
+        :ns-regexp "-test$"}}}

@@ -14,4 +14,6 @@ The project is written in ClojureScript then compiled as a Node.js library, whic
 scripts/./build-release.sh
 # Start a ClojureScript REPL
 scripts/./start-repl.sh
+# Run the tests
+scripts/./run-tests.sh
 ```
