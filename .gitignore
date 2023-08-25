@@ -1,3 +1,4 @@
 Open On Github.novaextension/Scripts/*
 node_modules
 .shadow-cljs
+tmp/

@@ -7,8 +7,11 @@ The project is written in ClojureScript then compiled as a Node.js library, whic
 - Install a JDK and Node.js
 - `npm install` the shadow-cljs build dependencies
 
-## Building a release
+## Development commands
 
 ```sh
-npx shadow-cljs release extension
+# Build a release
+scripts/./build-release.sh
+# Start a ClojureScript REPL
+scripts/./start-repl.sh
 ```

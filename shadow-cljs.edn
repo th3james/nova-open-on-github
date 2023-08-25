@@ -5,10 +5,14 @@
   "src/test"]
 
  :dependencies
- [[org.clojure/core.async "1.6.681"
-   cider/cider-nrepl "0.36.1"]]
+ [[org.clojure/core.async "1.6.681"]
+  [cider/cider-nrepl "0.36.1"]]
 
  :builds
  {:extension {:target :node-library
               :output-to "Open On Github.novaextension/Scripts/core.js"
-              :exports-var open-on-github.core/main}}}
+              :exports-var open-on-github.core/main}
+
+  :repl {:target :node-script
+         :output-to "tmp/repl.js"
+         :main open-on-github.repl/main}}}
