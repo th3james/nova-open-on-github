@@ -4,10 +4,11 @@
     [open-on-github.git :refer [build-github-url]]))
 
 
-
 (defn open-current-file
   ([editor]
    (open-current-file editor nil nil))
   ([editor get-git-info-fn open-url-fn]
    (go
-     (println "Open on GitHub command called"))))
+     (let [git-info (get-git-info-fn editor)
+           url (build-github-url git-info)]
+       (open-url-fn url)))))
