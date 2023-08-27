@@ -5,8 +5,7 @@
   "src/test"]
 
  :dependencies
- [[org.clojure/core.async "1.6.681"]
-  [cider/cider-nrepl "0.36.1"]]
+ [[cider/cider-nrepl "0.36.1"]]
 
  :builds
  {:extension {:target :node-library
@@ -15,8 +14,10 @@
 
   :repl {:target :node-script
          :output-to "tmp/repl.js"
-         :main open-on-github.repl/main}
+         :main open-on-github.repl/main
+         :devtools {:after-load open-on-github.repl/main}}
 
- :test {:target :node-test
-        :output-to "tmp/test.js"
-        :ns-regexp "-test$"}}}
+  :test {:target :node-test
+         :output-to "tmp/test.js"
+         :main open-on-github.test-runner/run-all-tests
+         :autorun true}}}
