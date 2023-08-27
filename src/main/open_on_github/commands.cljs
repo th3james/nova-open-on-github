@@ -1,7 +1,7 @@
 (ns open-on-github.commands
   (:require
     [cljs.core.async :refer [go]]
-    [open-on-github.git :refer [build-github-url]]))
+    [open-on-github.git :refer [get-git-info build-github-url]]))
 
 
 (defn open-current-file
