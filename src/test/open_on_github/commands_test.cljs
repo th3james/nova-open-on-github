@@ -14,8 +14,9 @@
                  fake-editor :fake-editor
                  fake-git-info {:branch "master"}
                  fake-get-git-info (fn [e]
-                                     (is (= e fake-editor))
-                                     fake-git-info)
+                                     (go
+                                       (is (= e fake-editor))
+                                       fake-git-info))
                  fake-open-url (fn [url]
                                  (is (= url (build-github-url fake-git-info)))
                                  (go (>! finished-chan true)))]

@@ -1,13 +1,13 @@
 (ns open-on-github.nova-interface
   (:require
-    [cljs.core.async :refer [>! go]]))
+    [cljs.core.async :refer [>! chan go go-loop <! close!]]))
 
 
 (defprotocol INova
 
   (register-command [_ command-id command-fn])
 
-  (run-process [_ editor executable args])
+  (run-process [_ editor executable])
 
   (open-url [_ url]))
 
@@ -24,9 +24,27 @@
 
 
   (run-process
-    [_ executable args opts]
-    (go
-      (println "RealNova running process not implemented")))
+    [_ executable args]
+    (let [msg-chan (chan)
+          result-chan (chan 1)
+          process (js/Process. "/usr/bin/env"  (clj->js {
+                                                         "args" (into-array (cons executable args))
+                                                         "shell" true}))]
+
+      (.onStdout process (fn [line] (go (>! msg-chan [:out line]))))
+      (.onStderr process (fn [line] (go (>! msg-chan [:err line]))))
+      (.onDidExit process (fn [status] (go (>! msg-chan [:exit status]))))
+
+      (.start process)
+
+      (go-loop [data {:out [] :err []}]
+        (let [[type msg] (<! msg-chan)]
+          (cond
+            (= type :out) (recur (update data :out conj msg))
+            (= type :err) (recur (update data :err conj msg))
+            (= type :exit) (do (>! result-chan (assoc data :exit msg))
+                               (close! msg-chan)))))
+      result-chan))
 
 
   (open-url
@@ -45,9 +63,9 @@
 
 
   (run-process
-    [_ executable args opts]
+    [_ executable args]
     (go
-      (println "StubNova running process " executable args opts)
+      (println "StubNova running process " executable args)
       {:out "fake output"}))
 
 

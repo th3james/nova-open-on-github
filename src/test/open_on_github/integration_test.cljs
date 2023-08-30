@@ -12,21 +12,20 @@
     (async done
            (let [finished-chan (chan 1)
                  t (timeout 100)
-                 fake-editor #js {"path" "fake/path"}
+                 fake-editor #js {"document" #js {"path" "fake/path"}}
                  fake-nova (reify INova
 
                              (run-process
-                               [_ executable args opts]
+                               [_ executable args]
                                (go
                                  (is (= executable "git"))
                                  (is (= args ["rev-parse" "--abbrev-ref" "HEAD"]))
-                                 (is (= opts {:cwd "fake/path"}))
-                                 {:status 0 :out "master\n"}))
+                                 {:status 0 :out ["master\n"]}))
 
                              (open-url
                                [_ url]
-                               (is (= url "master"))
-                               (go nil)))]
+                               (is (= url "github.com/master/"))
+                               (go (>! finished-chan true))))]
              (reset! nova fake-nova)
              (open-current-file fake-editor)
              (go

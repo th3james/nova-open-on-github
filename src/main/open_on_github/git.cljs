@@ -7,12 +7,13 @@
 
 
 (defn get-branch
-  ([editor] (get-branch editor (fn [executable args opts] (run-process @nova executable args opts))))
+  ([editor] (get-branch editor (fn [executable args opts] (run-process @nova executable args))))
   ([editor run-process-fn]
    (go
-     (let [process-result (<! (run-process-fn "git" ["rev-parse" "--abbrev-ref" "HEAD"] {:cwd (.-path editor)}))]
+     (let [process-result (<! (run-process-fn "git" ["rev-parse" "--abbrev-ref" "HEAD"]))]
        ;; TODO handle errors
-       (str/trim-newline (:out process-result))))))
+       (print "process-result" process-result)
+       (str/trim-newline (apply str (:out process-result)))))))
 
 
 (defn get-git-info
@@ -23,6 +24,6 @@
 
 
 (defn build-github-url
-  [git-info]
+  [{branch :branch}]
 
-  (str "Called build-github-url with " git-info))
+  (str "github.com/" branch "/"))
