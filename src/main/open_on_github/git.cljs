@@ -7,7 +7,7 @@
 
 
 (defn get-branch
-  ([editor] (get-branch editor (fn [executable args opts] (run-process @nova executable args))))
+  ([editor] (get-branch editor (fn [executable args] (run-process @nova executable args))))
   ([editor run-process-fn]
    (go
      (let [process-result (<! (run-process-fn "git" ["rev-parse" "--abbrev-ref" "HEAD"]))]
