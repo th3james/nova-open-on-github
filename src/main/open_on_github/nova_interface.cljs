@@ -27,8 +27,7 @@
     [_ executable args]
     (let [msg-chan (chan)
           result-chan (chan 1)
-          process (js/Process. "/usr/bin/env"  (clj->js {
-                                                         "args" (into-array (cons executable args))
+          process (js/Process. "/usr/bin/env"  (clj->js {"args" (into-array (cons executable args))
                                                          "shell" true}))]
 
       (.onStdout process (fn [line] (go (>! msg-chan [:out line]))))
