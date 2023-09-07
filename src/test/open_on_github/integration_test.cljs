@@ -13,10 +13,17 @@
   (reify INova
     (run-process
       [_ executable args]
-      (let [expectation (:run-process expectations)]
-        (is (= executable (:executable expectation)))
-        (is (= args (:args expectation)))
-        (go (:result expectation))))
+      (let [expectations (:run-process expectations)]
+        (if-let [ret-val (some (fn [e]
+                                 (if (and (= executable (:executable e))
+                                          (= args (:args e)))
+                                   (:result e)
+                                   nil))
+
+                               expectations)]
+          (go ret-val)
+          (throw (js/Error.
+                   (str "run-process called with unexpected arguments: " executable " " args))))))
 
     (open-url
       [_ url]
@@ -31,10 +38,11 @@
            (with-timeout done
              (fn [finished-chan]
                (let [fake-editor #js {"document" #js {"path" "fake/path"}}
+                     fake-get-branch {:executable "git"
+                                      :args ["rev-parse" "--abbrev-ref" "HEAD"]
+                                      :result {:status 0 :out ["master\n"]}}
                      fake-nova (fake-nova-factory
-                                 {:run-process {:executable "git"
-                                                :args ["rev-parse" "--abbrev-ref" "HEAD"]
-                                                :result {:status 0 :out ["master\n"]}}
+                                 {:run-process [fake-get-branch]
                                   :open-url {:url "github.com/master/"
                                              :finished-chan finished-chan}})]
                  (reset! nova fake-nova)
