@@ -3,7 +3,7 @@
     [cljs.core.async :refer [<! >! go]]
     [cljs.test :refer [async deftest is testing]]
     [clojure.string :as str]
-    [open-on-github.git :refer [get-git-info get-branch build-github-url]]
+    [open-on-github.git :refer [get-git-info get-branch build-github-url parse-url-from-origin]]
     [open-on-github.test-helpers :refer [with-timeout]]))
 
 
@@ -43,4 +43,21 @@
     (let [branch-name "main"
           git-info {:branch branch-name}
           result (build-github-url git-info)]
-      (is (str/includes? result branch-name)))))
+      (is (str/includes? result branch-name))))
+
+  (testing "is prefixed with the github path built from the origin url"
+    (let [origin-url "git@github.com:cool-guy/nice-project.git"
+          git-info {:origin-url origin-url}
+          result (build-github-url git-info)]
+      (is (str/starts-with? result (parse-url-from-origin origin-url))))))
+
+(deftest test-parse-url-from-origin
+  (testing "starts with github.com"
+    (let [origin-url "git@github.com:cool-guy/nice-project.git"
+          result (parse-url-from-origin origin-url)]
+      (is (str/starts-with? result "https://github.com"))))
+
+  (testing "contains the username"
+    (let [origin-url "git@github.com:cool-guy/nice-project.git"
+          result (parse-url-from-origin origin-url)]
+      (is (str/includes? result "cool-guy")))))

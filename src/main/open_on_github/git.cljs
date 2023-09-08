@@ -11,8 +11,6 @@
   ([editor run-process-fn]
    (go
      (let [process-result (<! (run-process-fn "git" ["rev-parse" "--abbrev-ref" "HEAD"]))]
-       ;; TODO handle errors
-       (print "process-result" process-result)
        (str/trim-newline (apply str (:out process-result)))))))
 
 
@@ -23,7 +21,14 @@
      {:branch (<! (get-branch-fn editor))})))
 
 
-(defn build-github-url
-  [{branch :branch}]
+(defn parse-url-from-origin
+  [origin-url]
+  (let [split-origin (str/split origin-url #"://")]
+    (str "https://github.com/")))
 
-  (str "github.com/" branch "/"))
+
+(defn build-github-url
+  [{branch :branch
+    origin-url :origin-url}]
+
+  (str (parse-url-from-origin origin-url) branch "/"))
