@@ -51,13 +51,19 @@
           result (build-github-url git-info)]
       (is (str/starts-with? result (parse-url-from-origin origin-url))))))
 
+
 (deftest test-parse-url-from-origin
   (testing "starts with github.com"
     (let [origin-url "git@github.com:cool-guy/nice-project.git"
           result (parse-url-from-origin origin-url)]
       (is (str/starts-with? result "https://github.com"))))
 
-  (testing "contains the username"
+  (testing "contains the repo owner"
     (let [origin-url "git@github.com:cool-guy/nice-project.git"
           result (parse-url-from-origin origin-url)]
-      (is (str/includes? result "cool-guy")))))
+      (is (str/includes? result "cool-guy"))))
+
+  (testing "ends with the repo name"
+    (let [origin-url "git@github.com:cool-guy/nice-project.git"
+          result (parse-url-from-origin origin-url)]
+      (is (str/ends-with? result "nice-project/")))))

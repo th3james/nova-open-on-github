@@ -23,8 +23,9 @@
 
 (defn parse-url-from-origin
   [origin-url]
-  (let [split-origin (str/split origin-url #"://")]
-    (str "https://github.com/")))
+  (let [split-origin (str/split origin-url #":(.*)/(.*).git")
+        [_ owner repo-name] split-origin]
+    (str "https://github.com/" owner "/" repo-name "/")))
 
 
 (defn build-github-url
