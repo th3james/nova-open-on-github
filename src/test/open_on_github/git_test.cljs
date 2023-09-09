@@ -34,7 +34,21 @@
                                         (go {:status 0 :out ["cool-branch\n"]}))]
                  (go
                    (let [r (<! (get-branch fake-editor fake-run-process))]
-                     (is (= r "cool-branch"))
+                     (is (= r (:status :ok)))
+                     (is (= r (:branch "cool-branch")))
+                     (>! finished-chan true))))))))
+
+  (testing "when the subprocess fails, it returns an error"
+    (async done
+           (with-timeout done
+             (fn [finished-chan]
+               (let [fake-editor :fake-editor
+                     fake-run-process (fn [_ _args]
+                                        (go {:status 1 :out ["Oh dear!"]}))]
+                 (go
+                   (let [r (<! (get-branch fake-editor fake-run-process))]
+                     (is (= r (:status :error)))
+                     (is (= r (:branch "Oh dear!")))
                      (>! finished-chan true)))))))))
 
 
