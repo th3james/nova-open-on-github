@@ -7,7 +7,7 @@
     [open-on-github.test-helpers :refer [with-timeout]]))
 
 
-(deftest test-get-git-info
+(deftest test-get-git-info-success
   (testing "returns a map with the branch name"
     (async done
            (with-timeout done
@@ -15,14 +15,28 @@
                (let [fake-editor :fake-editor
                      fake-get-branch (fn [e]
                                        (is (= e fake-editor))
-                                       (go "cool-branch"))]
+                                       (go {:status :ok :branch "cool-branch"}))]
                  (go
                    (let [r (<! (get-git-info fake-editor fake-get-branch))]
-                     (is (= r {:branch "cool-branch"}))
+                     (is (= r {:status :ok :branch "cool-branch"}))
                      (>! finished-chan :true)))))))))
 
 
-(deftest test-get-branch
+(deftest test-get-git-info-fail
+  (testing "returns status error if anything fails"
+    (async done
+           (with-timeout done
+             (fn [finished-chan]
+               (let [fake-editor :fake-editor
+                     fake-get-branch (fn [_]
+                                       (go {:status :error :error "nope"}))]
+                 (go
+                   (let [r (<! (get-git-info fake-editor fake-get-branch))]
+                     (is (= r {:status :error :errors {:branch "nope"}}))
+                     (>! finished-chan :true)))))))))
+
+
+(deftest test-get-branch-success
   (testing "runs a subprocess and returns the branch name"
     (async done
            (with-timeout done
@@ -34,21 +48,23 @@
                                         (go {:status 0 :out ["cool-branch\n"]}))]
                  (go
                    (let [r (<! (get-branch fake-editor fake-run-process))]
-                     (is (= r (:status :ok)))
-                     (is (= r (:branch "cool-branch")))
-                     (>! finished-chan true))))))))
+                     (is (= (:status r) :ok))
+                     (is (= (:branch r) "cool-branch"))
+                     (>! finished-chan true)))))))))
 
+
+(deftest test-get-branch-fail
   (testing "when the subprocess fails, it returns an error"
     (async done
            (with-timeout done
              (fn [finished-chan]
                (let [fake-editor :fake-editor
                      fake-run-process (fn [_ _args]
-                                        (go {:status 1 :out ["Oh dear!"]}))]
+                                        (go {:status 1 :out [] :err ["Oh dear!"]}))]
                  (go
                    (let [r (<! (get-branch fake-editor fake-run-process))]
-                     (is (= r (:status :error)))
-                     (is (= r (:branch "Oh dear!")))
+                     (is (= (:status r) :error))
+                     (is (= (:error r) "Oh dear!"))
                      (>! finished-chan true)))))))))
 
 

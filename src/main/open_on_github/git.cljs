@@ -11,14 +11,19 @@
   ([editor run-process-fn]
    (go
      (let [process-result (<! (run-process-fn "git" ["rev-parse" "--abbrev-ref" "HEAD"]))]
-       (str/trim-newline (apply str (:out process-result)))))))
+       (if (= (:status process-result) 0)
+         {:status :ok :branch (str/trim-newline (apply str (:out process-result)))}
+         {:status :error :error (str/trim-newline (apply str (:err process-result)))})))))
 
 
 (defn get-git-info
   ([editor] (get-git-info editor get-branch))
   ([editor get-branch-fn]
    (go
-     {:branch (<! (get-branch-fn editor))})))
+     (let [result (<! (get-branch-fn editor))]
+       (if (= (:status result) :ok)
+         {:status :ok :branch (:branch result)}
+         {:status :error :errors {:branch (:error result)}})))))
 
 
 (defn parse-url-from-origin
