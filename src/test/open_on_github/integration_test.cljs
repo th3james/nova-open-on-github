@@ -40,10 +40,10 @@
                (let [fake-editor #js {"document" #js {"path" "fake/path"}}
                      fake-get-branch {:executable "git"
                                       :args ["rev-parse" "--abbrev-ref" "HEAD"]
-                                      :result {:status 0 :out ["cool-branch\n"]}}
+                                      :result {:exit 0 :out ["cool-branch\n"]}}
                      fake-get-origin {:executable "git"
                                       :args ["config", "--get", "remote.origin.url"]
-                                      :result {:status 0 :out ["git@github.com:cool-guy/nice-project.git\n"]}}
+                                      :result {:exit 0 :out ["git@github.com:cool-guy/nice-project.git\n"]}}
                      fake-nova (fake-nova-factory
                                  {:run-process [fake-get-branch fake-get-origin]
                                   :open-url {:url "https://github.com/cool-guy/nice-project/blob/cool-branch/"

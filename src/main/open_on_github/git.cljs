@@ -11,7 +11,8 @@
   ([editor run-process-fn]
    (go
      (let [process-result (<! (run-process-fn "git" ["rev-parse" "--abbrev-ref" "HEAD"]))]
-       (if (= (:status process-result) 0)
+       (println (str "Process result: " process-result))
+       (if (= (:exit process-result) 0)
          {:status :ok :branch (str/trim-newline (apply str (:out process-result)))}
          {:status :error :error (str/trim-newline (apply str (:err process-result)))})))))
 

@@ -1,6 +1,7 @@
 (ns open-on-github.nova-interface
   (:require
-    [cljs.core.async :refer [>! chan go go-loop <! close!]]))
+    [cljs.core.async :refer [>! chan go go-loop <! close!]]
+    [open-on-github.logging :refer [log]]))
 
 
 (defprotocol INova
@@ -35,9 +36,12 @@
       (.onDidExit process (fn [status] (go (>! msg-chan [:exit status]))))
 
       (.start process)
+      (log :debug (str "Process started" executable args))
 
       (go-loop [data {:out [] :err []}]
         (let [[type msg] (<! msg-chan)]
+          (log :debug (str "Process message" type msg))
+
           (cond
             (= type :out) (recur (update data :out conj msg))
             (= type :err) (recur (update data :err conj msg))

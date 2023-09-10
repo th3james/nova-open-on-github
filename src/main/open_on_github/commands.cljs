@@ -16,4 +16,4 @@
        (if (= (:status git-info) :ok)
          (let [url (build-github-url git-info)]
            (open-url-fn url))
-           (log-fn :error (str "Error getting git info: " git-info)))))))
+         (log-fn :error (str "Error getting git info: " git-info)))))))

@@ -29,7 +29,7 @@
              (fn [finished-chan]
                (let [fake-editor :fake-editor
                      fake-get-branch (fn [_]
-                                       (go {:status :error :error "nope"}))]
+                                      (go {:status :error :error "nope"}))]
                  (go
                    (let [r (<! (get-git-info fake-editor fake-get-branch))]
                      (is (= r {:status :error :errors {:branch "nope"}}))
@@ -45,7 +45,7 @@
                      fake-run-process (fn [executable args]
                                         (is (= executable "git"))
                                         (is (= args ["rev-parse" "--abbrev-ref" "HEAD"]))
-                                        (go {:status 0 :out ["cool-branch\n"]}))]
+                                        (go {:exit 0 :out ["cool-branch\n"]}))]
                  (go
                    (let [r (<! (get-branch fake-editor fake-run-process))]
                      (is (= (:status r) :ok))
@@ -60,7 +60,7 @@
              (fn [finished-chan]
                (let [fake-editor :fake-editor
                      fake-run-process (fn [_ _args]
-                                        (go {:status 1 :out [] :err ["Oh dear!"]}))]
+                                        (go {:exit 1 :out [] :err ["Oh dear!"]}))]
                  (go
                    (let [r (<! (get-branch fake-editor fake-run-process))]
                      (is (= (:status r) :error))

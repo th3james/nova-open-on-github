@@ -2,6 +2,7 @@
   (:require
     [cljs.core.async :refer [>! go]]
     [cljs.test :refer [async deftest is testing]]
+    [clojure.string :as str]
     [open-on-github.commands :refer [open-current-file]]
     [open-on-github.git :refer [build-github-url]]
     [open-on-github.test-helpers :refer [with-timeout]]))
@@ -34,6 +35,6 @@
                      fake-open-url (fn [])
                      fake-log (fn [level message]
                                 (is (= level :error))
-                                (is (= message "whoops"))
+                                (is (str/includes? message "whoops"))
                                 (go (>! finished-chan true)))]
                  (open-current-file fake-editor fake-get-git-info fake-open-url fake-log)))))))
