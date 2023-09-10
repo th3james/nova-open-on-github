@@ -11,15 +11,19 @@
   ([editor run-process-fn]
    (go
      (let [process-result (<! (run-process-fn "git" ["rev-parse" "--abbrev-ref" "HEAD"]))]
-       (println (str "Process result: " process-result))
        (if (= (:exit process-result) 0)
          {:status :ok :branch (str/trim-newline (apply str (:out process-result)))}
          {:status :error :error (str/trim-newline (apply str (:err process-result)))})))))
 
 
+(defn get-origin
+  []
+  (go {:status :error :error "not implemented"}))
+
+
 (defn get-git-info
-  ([editor] (get-git-info editor get-branch))
-  ([editor get-branch-fn]
+  ([editor] (get-git-info editor get-branch get-origin))
+  ([editor get-branch-fn get-origin-fn]
    (go
      (let [result (<! (get-branch-fn editor))]
        (if (= (:status result) :ok)

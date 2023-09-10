@@ -7,7 +7,7 @@
     [open-on-github.test-helpers :refer [with-timeout]]))
 
 
-(deftest test-get-git-info-success
+(deftest test-get-git-info-branch-success
   (testing "returns a map with the branch name"
     (async done
            (with-timeout done
@@ -15,10 +15,28 @@
                (let [fake-editor :fake-editor
                      fake-get-branch (fn [e]
                                        (is (= e fake-editor))
-                                       (go {:status :ok :branch "cool-branch"}))]
+                                       (go {:status :ok :branch "cool-branch"}))
+                     fake-get-origin (fn [] (go {:status :ok :origin-url "nvm"}))]
                  (go
-                   (let [r (<! (get-git-info fake-editor fake-get-branch))]
-                     (is (= r {:status :ok :branch "cool-branch"}))
+                   (let [r (<! (get-git-info fake-editor fake-get-branch fake-get-origin))]
+                     (is (= (:status r) :ok))
+                     (is (= (:branch r) "cool-branch"))
+                     (>! finished-chan :true)))))))))
+
+
+(deftest test-get-git-info-origin-success
+  (testing "returns a map with the origin url"
+    (async done
+           (with-timeout done
+             (fn [finished-chan]
+               (let [fake-editor :fake-editor
+                     fake-get-branch (fn [_] (go {:status :ok :branch "cool-branch"}))
+                     fake-get-origin (fn []
+                                       (go {:status :ok :origin-url "nvm"}))]
+                 (go
+                   (let [r (<! (get-git-info fake-editor fake-get-branch fake-get-origin))]
+                     (is (= (:status r) :ok))
+                     (is (= (:origin-url r) "nvm"))
                      (>! finished-chan :true)))))))))
 
 
@@ -29,9 +47,11 @@
              (fn [finished-chan]
                (let [fake-editor :fake-editor
                      fake-get-branch (fn [_]
-                                      (go {:status :error :error "nope"}))]
+                                       (go {:status :error :error "nope"}))
+                     fake-get-origin (fn []
+                                       (go {:status :ok :origin-url "nvm"}))]
                  (go
-                   (let [r (<! (get-git-info fake-editor fake-get-branch))]
+                   (let [r (<! (get-git-info fake-editor fake-get-branch fake-get-origin))]
                      (is (= r {:status :error :errors {:branch "nope"}}))
                      (>! finished-chan :true)))))))))
 
