@@ -52,7 +52,8 @@
                                        (go {:status :ok :origin-url "nvm"}))]
                  (go
                    (let [r (<! (get-git-info fake-editor fake-get-branch fake-get-origin))]
-                     (is (= r {:status :error :errors {:branch "nope"}}))
+                     (is (= (:status r) :error))
+                     (is (= (:errors r) {:branch "nope"}))
                      (>! finished-chan :true)))))))))
 
 

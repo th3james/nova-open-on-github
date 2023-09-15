@@ -30,26 +30,26 @@
                    [:origin-url get-origin-fn]]]
      (println "Calling git commands")
      (doseq [command commands]
-       (let [k (first command)
+       (let [val-name (first command)
              cmd-fn (second command)]
-         (go (>! process-chan {:k k :result (<! (cmd-fn editor))}))))
+         (go (>! process-chan {:name val-name :result (<! (cmd-fn editor))}))))
      (go-loop [git-info {:status :ok}
                pending-results 2]
        (if (zero? pending-results)
          (do
            (println "\t\treturning git-info " git-info)
            (>! result-chan git-info))
-         (let [result (<! process-chan)]
+         (let [cmd-result (<! process-chan)]
            (println "\tgit-info" git-info)
-           (println "\tresult" result)
-           (if (= (:status (:result result)) :error)
+           (println "\tcmd-result" cmd-result)
+           (if (= (:status (:result cmd-result)) :error)
              (recur (assoc git-info
                            :status :error
                            :errors (assoc (:errors git-info)
-                                          (:k result) (:error (:result result))))
+                                          (:name cmd-result) (:error (:result cmd-result))))
                     (dec pending-results))
              (recur (assoc git-info
-                           (:k result) (get (:result result) (:k result)))
+                           (:name cmd-result) (get (:result cmd-result) (:name cmd-result)))
                     (dec pending-results))))))
      result-chan)))
 
