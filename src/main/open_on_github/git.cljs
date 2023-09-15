@@ -3,7 +3,8 @@
     [cljs.core.async :refer [<! >! go go-loop chan]]
     [clojure.string :as str]
     [open-on-github.dependencies :refer [nova]]
-    [open-on-github.nova-interface :refer [run-process]]))
+    [open-on-github.nova-interface :refer [run-process]]
+    [open-on-github.result :refer [ok error]]))
 
 
 (defn get-branch
@@ -12,13 +13,13 @@
    (go
      (let [process-result (<! (run-process-fn "git" ["rev-parse" "--abbrev-ref" "HEAD"]))]
        (if (= (:exit process-result) 0)
-         {:status :ok :branch (str/trim-newline (apply str (:out process-result)))}
-         {:status :error :error (str/trim-newline (apply str (:err process-result)))})))))
+         (ok (str/trim-newline (apply str (:out process-result))))
+         (error  (str/trim-newline (apply str (:err process-result)))))))))
 
 
 (defn get-origin
   []
-  (go {:status :error :error "not implemented"}))
+  (go (error "not implemented")))
 
 
 (defn get-git-info
@@ -49,7 +50,7 @@
                                           (:name cmd-result) (:error (:result cmd-result))))
                     (dec pending-results))
              (recur (assoc git-info
-                           (:name cmd-result) (get (:result cmd-result) (:name cmd-result)))
+                           (:name cmd-result) (:val (:result cmd-result)))
                     (dec pending-results))))))
      result-chan)))
 

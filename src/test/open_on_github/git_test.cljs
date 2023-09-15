@@ -4,6 +4,7 @@
     [cljs.test :refer [async deftest is testing]]
     [clojure.string :as str]
     [open-on-github.git :refer [get-git-info get-branch build-github-url parse-url-from-origin]]
+    [open-on-github.result :refer [ok error]]
     [open-on-github.test-helpers :refer [with-timeout]]))
 
 
@@ -15,8 +16,8 @@
                (let [fake-editor :fake-editor
                      fake-get-branch (fn [e]
                                        (is (= e fake-editor))
-                                       (go {:status :ok :branch "cool-branch"}))
-                     fake-get-origin (fn [] (go {:status :ok :origin-url "nvm"}))]
+                                       (go (ok "cool-branch")))
+                     fake-get-origin (fn [] (go (ok "nvm")))]
                  (go
                    (let [r (<! (get-git-info fake-editor fake-get-branch fake-get-origin))]
                      (is (= (:status r) :ok))
@@ -30,9 +31,9 @@
            (with-timeout done
              (fn [finished-chan]
                (let [fake-editor :fake-editor
-                     fake-get-branch (fn [_] (go {:status :ok :branch "cool-branch"}))
+                     fake-get-branch (fn [_] (go (ok "cool-branch")))
                      fake-get-origin (fn []
-                                       (go {:status :ok :origin-url "nvm"}))]
+                                       (go (ok "nvm")))]
                  (go
                    (let [r (<! (get-git-info fake-editor fake-get-branch fake-get-origin))]
                      (is (= (:status r) :ok))
@@ -47,9 +48,9 @@
              (fn [finished-chan]
                (let [fake-editor :fake-editor
                      fake-get-branch (fn [_]
-                                       (go {:status :error :error "nope"}))
+                                       (go (error "nope")))
                      fake-get-origin (fn []
-                                       (go {:status :ok :origin-url "nvm"}))]
+                                       (go (ok "origin")))]
                  (go
                    (let [r (<! (get-git-info fake-editor fake-get-branch fake-get-origin))]
                      (is (= (:status r) :error))
@@ -70,7 +71,7 @@
                  (go
                    (let [r (<! (get-branch fake-editor fake-run-process))]
                      (is (= (:status r) :ok))
-                     (is (= (:branch r) "cool-branch"))
+                     (is (= (:val r) "cool-branch"))
                      (>! finished-chan true)))))))))
 
 
