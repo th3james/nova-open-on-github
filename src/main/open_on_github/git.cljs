@@ -14,12 +14,16 @@
      (let [process-result (<! (run-process-fn "git" ["rev-parse" "--abbrev-ref" "HEAD"]))]
        (if (= (:exit process-result) 0)
          (ok (str/trim-newline (apply str (:out process-result))))
-         (error  (str/trim-newline (apply str (:err process-result)))))))))
+         (error (str/trim-newline (apply str (:err process-result)))))))))
 
 
 (defn get-origin
-  []
-  (go (error "not implemented")))
+  ([editor] (get-origin editor (fn [executable args] (run-process @nova executable args))))
+  ([editor run-process-fn]
+   (go (let [process-result (<! (run-process-fn "git" ["config" "--get" "remote.origin.url"]))]
+         (if (= (:exit process-result) 0)
+           (ok (str/trim-newline (apply str (:out process-result))))
+           (error (str/trim-newline (apply str (:err process-result)))))))))
 
 
 (defn get-git-info

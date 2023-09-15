@@ -3,7 +3,7 @@
     [cljs.core.async :refer [<! >! go]]
     [cljs.test :refer [async deftest is testing]]
     [clojure.string :as str]
-    [open-on-github.git :refer [get-git-info get-branch build-github-url parse-url-from-origin]]
+    [open-on-github.git :refer [get-git-info get-branch get-origin build-github-url parse-url-from-origin]]
     [open-on-github.result :refer [ok error]]
     [open-on-github.test-helpers :refer [with-timeout]]))
 
@@ -64,7 +64,7 @@
            (with-timeout done
              (fn [finished-chan]
                (let [fake-editor :fake-editor
-                     fake-run-process (fn [executable args]
+                     fake-run-process (fn [_ executable args]
                                         (is (= executable "git"))
                                         (is (= args ["rev-parse" "--abbrev-ref" "HEAD"]))
                                         (go {:exit 0 :out ["cool-branch\n"]}))]
@@ -85,6 +85,36 @@
                                         (go {:exit 1 :out [] :err ["Oh dear!"]}))]
                  (go
                    (let [r (<! (get-branch fake-editor fake-run-process))]
+                     (is (= (:status r) :error))
+                     (is (= (:error r) "Oh dear!"))
+                     (>! finished-chan true)))))))))
+
+
+(deftest test-get-origin-success
+  (testing "runs a subprocess and returns the origin url"
+    (async done
+           (with-timeout done
+             (fn [finished-chan]
+               (let [fake-run-process (fn [executable args]
+                                        (is (= executable "git"))
+                                        (is (= args ["config" "--get" "remote.origin.url"]))
+                                        (go {:exit 0 :out ["some-url\n"]}))]
+                 (go
+                   (let [r (<! (get-origin nil fake-run-process))]
+                     (is (= (:status r) :ok))
+                     (is (= (:val r) "some-url"))
+                     (>! finished-chan true)))))))))
+
+
+(deftest test-get-origin-fail
+  (testing "when the subprocess fails, it returns an error"
+    (async done
+           (with-timeout done
+             (fn [finished-chan]
+               (let [fake-run-process (fn [_ _args]
+                                        (go {:exit 1 :out [] :err ["Oh dear!\n"]}))]
+                 (go
+                   (let [r (<! (get-origin nil fake-run-process))]
                      (is (= (:status r) :error))
                      (is (= (:error r) "Oh dear!"))
                      (>! finished-chan true)))))))))
