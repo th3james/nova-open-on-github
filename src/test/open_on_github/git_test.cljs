@@ -64,7 +64,7 @@
            (with-timeout done
              (fn [finished-chan]
                (let [fake-editor :fake-editor
-                     fake-run-process (fn [_ executable args]
+                     fake-run-process (fn [executable args]
                                         (is (= executable "git"))
                                         (is (= args ["rev-parse" "--abbrev-ref" "HEAD"]))
                                         (go {:exit 0 :out ["cool-branch\n"]}))]
@@ -131,7 +131,13 @@
     (let [origin-url "git@github.com:cool-guy/nice-project.git"
           git-info {:origin-url origin-url}
           result (build-github-url git-info)]
-      (is (str/starts-with? result (parse-url-from-origin origin-url))))))
+      (is (str/starts-with? result (parse-url-from-origin origin-url)))))
+  
+  (testing "is a well formed github URL"
+    (let [origin-url "git@github.com:cool-guy/nice-project.git"
+          git-info {:origin-url origin-url :branch "main"}
+          result (build-github-url git-info)]
+      (is (re-matches #".*/blob/[^/]+/" result)))))
 
 
 (deftest test-parse-url-from-origin

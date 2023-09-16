@@ -33,7 +33,6 @@
          result-chan (chan 1)
          commands [[:branch get-branch-fn]
                    [:origin-url get-origin-fn]]]
-     (println "Calling git commands")
      (doseq [command commands]
        (let [val-name (first command)
              cmd-fn (second command)]
@@ -41,12 +40,8 @@
      (go-loop [git-info {:status :ok}
                pending-results 2]
        (if (zero? pending-results)
-         (do
-           (println "\t\treturning git-info " git-info)
-           (>! result-chan git-info))
+         (>! result-chan git-info)
          (let [cmd-result (<! process-chan)]
-           (println "\tgit-info" git-info)
-           (println "\tcmd-result" cmd-result)
            (if (= (:status (:result cmd-result)) :error)
              (recur (assoc git-info
                            :status :error
@@ -70,4 +65,4 @@
   [{branch :branch
     origin-url :origin-url}]
 
-  (str (parse-url-from-origin origin-url) branch "/"))
+  (str (parse-url-from-origin origin-url) "blob/" branch "/"))
