@@ -20,7 +20,6 @@
 
   (register-command
     [_ command-id command-fn]
-    (println "Registering command" command-id)
     (js/nova.commands.register command-id command-fn))
 
 
@@ -52,7 +51,8 @@
 
   (open-url
     [_ url]
-    (go (println "RealNova open url not implemented" url))))
+    (go (log :debug (str "Opening url " url))
+        (.openURL js/nova url))))
 
 
 (defrecord StubNova
