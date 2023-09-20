@@ -63,10 +63,11 @@
     (async done
            (with-timeout done
              (fn [finished-chan]
-               (let [fake-editor :fake-editor
-                     fake-run-process (fn [executable args]
+               (let [fake-editor {:document-parent-dir "some/path"}
+                     fake-run-process (fn [executable args cwd]
                                         (is (= executable "git"))
                                         (is (= args ["rev-parse" "--abbrev-ref" "HEAD"]))
+                                        (is (= cwd "some/path"))
                                         (go {:exit 0 :out ["cool-branch\n"]}))]
                  (go
                    (let [r (<! (get-branch fake-editor fake-run-process))]

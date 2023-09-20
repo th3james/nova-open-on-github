@@ -5,6 +5,7 @@
     [clojure.string :as str]
     [open-on-github.commands :refer [open-current-file]]
     [open-on-github.git :refer [build-github-url]]
+    [open-on-github.nova-helpers :refer [parse-editor]]
     [open-on-github.test-helpers :refer [with-timeout]]))
 
 
@@ -13,10 +14,10 @@
     (async done
            (with-timeout done
              (fn [finished-chan]
-               (let [fake-editor :fake-editor
+               (let [fake-editor #js {"document" #js {"path" "fake/path.tsx"}}
                      fake-git-info {:status :ok :branch "master"}
                      fake-get-git-info (fn [e]
-                                         (is (= e fake-editor))
+                                         (is (= e (parse-editor fake-editor)))
                                          (go fake-git-info))
                      fake-open-url (fn [url]
                                      (is (= url (build-github-url fake-git-info)))
@@ -29,7 +30,7 @@
     (async done
            (with-timeout done
              (fn [finished-chan]
-               (let [fake-editor :fake-editor
+               (let [fake-editor #js {"document" #js {"path" "fake/path.tsx"}}
                      fake-get-git-info (fn [_]
                                          (go {:status :error :errors {:branch "whoops"}}))
                      fake-open-url (fn [])

@@ -8,7 +8,7 @@
 
   (register-command [_ command-id command-fn])
 
-  (run-process [_ editor executable])
+  (run-process [_ editor executable cwd])
 
   (open-url [_ url]))
 
@@ -24,7 +24,7 @@
 
 
   (run-process
-    [_ executable args]
+    [_ executable args cwd]
     (let [msg-chan (chan)
           result-chan (chan 1)
           process (js/Process. "/usr/bin/env"  (clj->js {"args" (into-array (cons executable args))
@@ -66,7 +66,7 @@
 
 
   (run-process
-    [_ executable args]
+    [_ executable args cwd]
     (go
       (println "StubNova running process " executable args)
       {:out "fake output"}))
