@@ -7,9 +7,13 @@
     [open-on-github.result :refer [ok error]]))
 
 
+(defn -prod-run-process
+  [executable args cwd]
+  (run-process @nova executable args cwd))
+
+
 (defn get-branch
-  ([editor] 
-   (get-branch editor (fn [executable args cwd] (run-process @nova executable args cwd))))
+  ([editor] (get-branch editor -prod-run-process))
   ([{:keys [document-parent-dir]} run-process-fn]
    (go
      (let [process-result (<! (run-process-fn "git" ["rev-parse" "--abbrev-ref" "HEAD"] document-parent-dir))]
@@ -19,8 +23,7 @@
 
 
 (defn get-origin
-  ([editor] 
-   (get-origin editor (fn [executable args cwd] (run-process @nova executable args cwd))))
+  ([editor] (get-origin editor -prod-run-process))
   ([{:keys [document-parent-dir]} run-process-fn]
    (go (let [process-result (<! (run-process-fn "git" ["config" "--get" "remote.origin.url"] document-parent-dir))]
          (if (= (:exit process-result) 0)
