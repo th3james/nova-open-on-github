@@ -28,14 +28,15 @@
     (let [msg-chan (chan)
           result-chan (chan 1)
           process (js/Process. "/usr/bin/env"  (clj->js {"args" (into-array (cons executable args))
-                                                         "shell" true}))]
+                                                         "shell" true
+                                                         "cwd" cwd}))]
 
       (.onStdout process (fn [line] (go (>! msg-chan [:out line]))))
       (.onStderr process (fn [line] (go (>! msg-chan [:err line]))))
       (.onDidExit process (fn [status] (go (>! msg-chan [:exit status]))))
 
       (.start process)
-      (log :debug (str "Process started" executable args))
+      (log :debug (str "Process started" executable args " in " cwd))
 
       (go-loop [data {:out [] :err []}]
         (let [[type msg] (<! msg-chan)]

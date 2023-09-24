@@ -9,7 +9,7 @@
 
 (defn get-branch
   ([editor] 
-   (get-branch editor (fn [executable args cwd] (run-process @nova executable args  cwd))))
+   (get-branch editor (fn [executable args cwd] (run-process @nova executable args cwd))))
   ([{:keys [document-parent-dir]} run-process-fn]
    (go
      (let [process-result (<! (run-process-fn "git" ["rev-parse" "--abbrev-ref" "HEAD"] document-parent-dir))]
@@ -19,9 +19,10 @@
 
 
 (defn get-origin
-  ([editor] (get-origin editor (fn [executable args] (run-process @nova executable args :todo))))
-  ([editor run-process-fn]
-   (go (let [process-result (<! (run-process-fn "git" ["config" "--get" "remote.origin.url"] :todo))]
+  ([editor] 
+   (get-origin editor (fn [executable args cwd] (run-process @nova executable args cwd))))
+  ([{:keys [document-parent-dir]} run-process-fn]
+   (go (let [process-result (<! (run-process-fn "git" ["config" "--get" "remote.origin.url"] document-parent-dir))]
          (if (= (:exit process-result) 0)
            (ok (str/trim-newline (apply str (:out process-result))))
            (error (str/trim-newline (apply str (:err process-result)))))))))

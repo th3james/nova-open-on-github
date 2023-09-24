@@ -96,12 +96,14 @@
     (async done
            (with-timeout done
              (fn [finished-chan]
-               (let [fake-run-process (fn [executable args]
+               (let [fake-editor {:document-parent-dir "dat/path"}
+                     fake-run-process (fn [executable args cwd]
                                         (is (= executable "git"))
                                         (is (= args ["config" "--get" "remote.origin.url"]))
+                                        (is (= cwd "dat/path"))
                                         (go {:exit 0 :out ["some-url\n"]}))]
                  (go
-                   (let [r (<! (get-origin nil fake-run-process))]
+                   (let [r (<! (get-origin fake-editor fake-run-process))]
                      (is (= (:status r) :ok))
                      (is (= (:val r) "some-url"))
                      (>! finished-chan true)))))))))
@@ -133,7 +135,7 @@
           git-info {:origin-url origin-url}
           result (build-github-url git-info)]
       (is (str/starts-with? result (parse-url-from-origin origin-url)))))
-  
+
   (testing "is a well formed github URL"
     (let [origin-url "git@github.com:cool-guy/nice-project.git"
           git-info {:origin-url origin-url :branch "main"}
