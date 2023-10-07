@@ -29,7 +29,7 @@
              cmd-fn (second command)]
          (go (>! process-chan {:name val-name :result (<! (cmd-fn editor))}))))
      (go-loop [git-info {:status :ok}
-               pending-results 2]
+               pending-results (count commands)]
        (if (zero? pending-results)
          (>! result-chan git-info)
          (let [cmd-result (<! process-chan)]
