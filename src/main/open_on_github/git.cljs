@@ -28,7 +28,8 @@
        (let [val-name (first command)
              cmd-fn (second command)]
          (go (>! process-chan {:name val-name :result (<! (cmd-fn editor))}))))
-     (go-loop [git-info {:status :ok}
+     (go-loop [git-info {:status :ok
+                         :editor editor}
                pending-results (count commands)]
        (if (zero? pending-results)
          (>! result-chan git-info)

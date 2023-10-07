@@ -38,18 +38,22 @@
     (async done
            (with-timeout done
              (fn [finished-chan]
-               (let [fake-editor #js {"document" #js {"path" "fake/path.tsx"}}
+               (let [fake-editor #js {"document" #js {"path" "git-sub/fake/path.tsx"}}
                      fake-get-branch {:executable "git"
                                       :args ["rev-parse" "--abbrev-ref" "HEAD"]
-                                      :cwd "fake"
+                                      :cwd "git-sub/fake"
                                       :result {:exit 0 :out ["cool-branch\n"]}}
                      fake-get-origin {:executable "git"
                                       :args ["config", "--get", "remote.origin.url"]
-                                      :cwd "fake"
+                                      :cwd "git-sub/fake"
                                       :result {:exit 0 :out ["git@github.com:cool-guy/nice-project.git\n"]}}
+                     fake-get-top-level {:executable "git"
+                                      :args ["rev-parse", "--show-toplevel"]
+                                      :cwd "git-sub/fake"
+                                      :result {:exit 0 :out ["/Users/coolguy/my-project/git-sub\n"]}}
                      fake-nova (fake-nova-factory
-                                 {:run-process [fake-get-branch fake-get-origin]
-                                  :open-url {:url "https://github.com/cool-guy/nice-project/blob/cool-branch/"
+                                 {:run-process [fake-get-branch fake-get-origin fake-get-top-level]
+                                  :open-url {:url "https://github.com/cool-guy/nice-project/blob/cool-branch/fake/path.tsx"
                                              :finished-chan finished-chan}})]
                  (reset! nova fake-nova)
                  (open-current-file fake-editor)))))))

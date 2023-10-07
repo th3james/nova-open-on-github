@@ -15,5 +15,6 @@
   (let [document (.-document editor)
         path (.-path document)
         parent-path (get-parent-dir path)]
-    {:document-parent-dir parent-path}))
+    {:document-path path
+     :document-parent-dir parent-path}))
 

@@ -8,6 +8,21 @@
     [open-on-github.test-helpers :refer [with-timeout]]))
 
 
+(deftest test-get-git-info-editor
+  (testing "returns a map with given editor"
+    (async done
+           (with-timeout done
+             (fn [finished-chan]
+               (let [fake-editor :fake-editor
+                     fake-get-branch (fn [] (go (ok "nvm")))
+                     fake-get-origin (fn [] (go (ok "nvm")))]
+                 (go
+                   (let [r (<! (get-git-info fake-editor fake-get-branch fake-get-origin))]
+                     (is (= (:status r) :ok))
+                     (is (= (:editor r) fake-editor))
+                     (>! finished-chan :true)))))))))
+
+
 (deftest test-get-git-info-branch-success
   (testing "returns a map with the branch name"
     (async done
@@ -135,6 +150,12 @@
           git-info {:origin-url origin-url}
           result (build-github-url git-info)]
       (is (str/starts-with? result (parse-url-from-origin origin-url)))))
+
+  (testing "is suffixed with the editor path"
+    (let [origin-url "git@github.com:cool-guy/nice-project.git"
+          git-info {:editor {:document-path "some/path.cljs"}}
+          result (build-github-url git-info)]
+      (is (str/ends-with? result "some/path.cljs"))))
 
   (testing "is a well formed github URL"
     (let [origin-url "git@github.com:cool-guy/nice-project.git"

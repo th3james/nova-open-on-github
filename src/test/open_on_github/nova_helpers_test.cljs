@@ -7,4 +7,8 @@
 (deftest test-parse-editor
   (testing "returns a map with the parent directory of the document path"
     (let [fake-editor #js {"document" #js {"path" "hat/fake/path.tsx"}}]
-      (is (= (:document-parent-dir (parse-editor fake-editor)) "hat/fake")))))
+      (is (= (:document-parent-dir (parse-editor fake-editor)) "hat/fake"))))
+
+  (testing "returns a map with the document path"
+    (let [fake-editor #js {"document" #js {"path" "hat/fake/path.tsx"}}]
+      (is (= (:document-path (parse-editor fake-editor)) "hat/fake/path.tsx")))))
