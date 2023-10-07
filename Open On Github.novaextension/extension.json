@@ -14,7 +14,7 @@
   "activationEvents": [],
 
   "entitlements": {
-    "filesystem": "read",
+    "filesystem": "readonly",
     "process": true
   },
 
