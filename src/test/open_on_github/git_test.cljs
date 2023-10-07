@@ -68,7 +68,7 @@
                                         (is (= executable "git"))
                                         (is (= args ["rev-parse" "--abbrev-ref" "HEAD"]))
                                         (is (= cwd "some/path"))
-                                        (go {:exit 0 :out ["cool-branch\n"]}))]
+                                        (go (ok "cool-branch")))]
                  (go
                    (let [r (<! (get-branch fake-editor fake-run-process))]
                      (is (= (:status r) :ok))
@@ -83,7 +83,7 @@
              (fn [finished-chan]
                (let [fake-editor :fake-editor
                      fake-run-process (fn [_ _args]
-                                        (go {:exit 1 :out [] :err ["Oh dear!"]}))]
+                                        (go (error "Oh dear!")))]
                  (go
                    (let [r (<! (get-branch fake-editor fake-run-process))]
                      (is (= (:status r) :error))
@@ -101,7 +101,7 @@
                                         (is (= executable "git"))
                                         (is (= args ["config" "--get" "remote.origin.url"]))
                                         (is (= cwd "dat/path"))
-                                        (go {:exit 0 :out ["some-url\n"]}))]
+                                        (go (ok "some-url")))]
                  (go
                    (let [r (<! (get-origin fake-editor fake-run-process))]
                      (is (= (:status r) :ok))
@@ -115,7 +115,7 @@
            (with-timeout done
              (fn [finished-chan]
                (let [fake-run-process (fn [_ _args]
-                                        (go {:exit 1 :out [] :err ["Oh dear!\n"]}))]
+                                        (go (error "Oh dear!")))]
                  (go
                    (let [r (<! (get-origin nil fake-run-process))]
                      (is (= (:status r) :error))

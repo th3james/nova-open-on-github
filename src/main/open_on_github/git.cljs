@@ -2,33 +2,19 @@
   (:require
     [cljs.core.async :refer [<! >! go go-loop chan]]
     [clojure.string :as str]
-    [open-on-github.dependencies :refer [nova]]
-    [open-on-github.nova-interface :refer [run-process]]
-    [open-on-github.result :refer [ok error]]))
-
-
-(defn -prod-run-process
-  [executable args cwd]
-  (run-process @nova executable args cwd))
+    [open-on-github.processes :refer [run-process]]))
 
 
 (defn get-branch
-  ([editor] (get-branch editor -prod-run-process))
+  ([editor] (get-branch editor run-process))
   ([{:keys [document-parent-dir]} run-process-fn]
-   (go
-     (let [process-result (<! (run-process-fn "git" ["rev-parse" "--abbrev-ref" "HEAD"] document-parent-dir))]
-       (if (= (:exit process-result) 0)
-         (ok (str/trim-newline (apply str (:out process-result))))
-         (error (str/trim-newline (apply str (:err process-result)))))))))
+   (run-process-fn "git" ["rev-parse" "--abbrev-ref" "HEAD"] document-parent-dir)))
 
 
 (defn get-origin
-  ([editor] (get-origin editor -prod-run-process))
+  ([editor] (get-origin editor run-process))
   ([{:keys [document-parent-dir]} run-process-fn]
-   (go (let [process-result (<! (run-process-fn "git" ["config" "--get" "remote.origin.url"] document-parent-dir))]
-         (if (= (:exit process-result) 0)
-           (ok (str/trim-newline (apply str (:out process-result))))
-           (error (str/trim-newline (apply str (:err process-result)))))))))
+   (run-process-fn "git" ["config" "--get" "remote.origin.url"] document-parent-dir)))
 
 
 (defn get-git-info
