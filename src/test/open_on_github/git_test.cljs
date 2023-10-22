@@ -3,7 +3,8 @@
     [cljs.core.async :refer [<! >! go]]
     [cljs.test :refer [async deftest is testing]]
     [clojure.string :as str]
-    [open-on-github.git :refer [get-git-info get-branch get-origin build-github-url parse-url-from-origin]]
+    [open-on-github.git :refer [get-git-info get-branch get-origin get-root build-github-url parse-url-from-origin]]
+    [open-on-github.path :refer [chroot]]
     [open-on-github.result :refer [ok error]]
     [open-on-github.test-helpers :refer [with-timeout]]))
 
@@ -14,10 +15,9 @@
            (with-timeout done
              (fn [finished-chan]
                (let [fake-editor :fake-editor
-                     fake-get-branch (fn [] (go (ok "nvm")))
-                     fake-get-origin (fn [] (go (ok "nvm")))]
+                     fake-getter (fn [] (go (ok "nvm")))]
                  (go
-                   (let [r (<! (get-git-info fake-editor fake-get-branch fake-get-origin))]
+                   (let [r (<! (get-git-info fake-editor fake-getter fake-getter fake-getter))]
                      (is (= (:status r) :ok))
                      (is (= (:editor r) fake-editor))
                      (>! finished-chan :true)))))))))
@@ -29,12 +29,12 @@
            (with-timeout done
              (fn [finished-chan]
                (let [fake-editor :fake-editor
+                     fake-getter (fn [] (go (ok "nvm")))
                      fake-get-branch (fn [e]
                                        (is (= e fake-editor))
-                                       (go (ok "cool-branch")))
-                     fake-get-origin (fn [] (go (ok "nvm")))]
+                                       (go (ok "cool-branch")))]
                  (go
-                   (let [r (<! (get-git-info fake-editor fake-get-branch fake-get-origin))]
+                   (let [r (<! (get-git-info fake-editor fake-get-branch fake-getter fake-getter))]
                      (is (= (:status r) :ok))
                      (is (= (:branch r) "cool-branch"))
                      (>! finished-chan :true)))))))))
@@ -46,13 +46,30 @@
            (with-timeout done
              (fn [finished-chan]
                (let [fake-editor :fake-editor
-                     fake-get-branch (fn [_] (go (ok "cool-branch")))
+                     fake-getter (fn [] (go (ok "nvm")))
                      fake-get-origin (fn []
-                                       (go (ok "nvm")))]
+                                       (go (ok "dat-origin")))]
                  (go
-                   (let [r (<! (get-git-info fake-editor fake-get-branch fake-get-origin))]
+                   (let [r (<! (get-git-info fake-editor fake-getter fake-get-origin fake-getter))]
                      (is (= (:status r) :ok))
-                     (is (= (:origin-url r) "nvm"))
+                     (is (= (:origin-url r) "dat-origin"))
+                     (>! finished-chan :true)))))))))
+
+
+(deftest test-get-git-info-git-root-success
+  (testing "returns a map with the git root"
+    (async done
+           (with-timeout done
+             (fn [finished-chan]
+               (let [fake-editor :fake-editor
+                     fake-getter (fn [] (go (ok "nvm")))
+                     fake-get-root (fn [e]
+                                     (is (= e fake-editor))
+                                     (go (ok "/the/root")))]
+                 (go
+                   (let [r (<! (get-git-info fake-editor fake-getter fake-getter fake-get-root))]
+                     (is (= (:status r) :ok))
+                     (is (= (:git-root r) "/the/root"))
                      (>! finished-chan :true)))))))))
 
 
@@ -62,12 +79,12 @@
            (with-timeout done
              (fn [finished-chan]
                (let [fake-editor :fake-editor
-                     fake-get-branch (fn [_]
-                                       (go (error "nope")))
-                     fake-get-origin (fn []
-                                       (go (ok "origin")))]
+                     fake-getter-fail (fn [_]
+                                        (go (error "nope")))
+                     fake-getter-success (fn []
+                                           (go (ok "origin")))]
                  (go
-                   (let [r (<! (get-git-info fake-editor fake-get-branch fake-get-origin))]
+                   (let [r (<! (get-git-info fake-editor fake-getter-fail fake-getter-success fake-getter-success))]
                      (is (= (:status r) :error))
                      (is (= (:errors r) {:branch "nope"}))
                      (>! finished-chan :true)))))))))
@@ -138,6 +155,24 @@
                      (>! finished-chan true)))))))))
 
 
+(deftest test-get-root-success
+  (testing "runs git rev-parse --show-toplevel and returns the output"
+    (async done
+           (with-timeout done
+             (fn [finished-chan]
+               (let [fake-editor {:document-parent-dir "/src/repo/subdir"}
+                     fake-run-process (fn [executable args cwd]
+                                        (is (= executable "git"))
+                                        (is (= args ["rev-parse" "--show-toplevel"]))
+                                        (is (= cwd "/src/repo/subdir"))
+                                        (go (ok "/src/repo/")))]
+                 (go
+                   (let [r (<! (get-root fake-editor fake-run-process))]
+                     (is (= (:status r) :ok))
+                     (is (= (:val r) "/src/repo/"))
+                     (>! finished-chan true)))))))))
+
+
 (deftest test-build-github-url
   (testing "contains the branch name"
     (let [branch-name "main"
@@ -151,17 +186,21 @@
           result (build-github-url git-info)]
       (is (str/starts-with? result (parse-url-from-origin origin-url)))))
 
-  (testing "is suffixed with the editor path"
-    (let [origin-url "git@github.com:cool-guy/nice-project.git"
-          git-info {:editor {:document-path "some/path.cljs"}}
+  (testing "is suffixed with the document path chrooted to the git root"
+    (let [git-info {:editor {:document-path "/User/some/path.cljs"}
+                    :git-root "/User/some"}
           result (build-github-url git-info)]
-      (is (str/ends-with? result "some/path.cljs"))))
+      (is (str/ends-with? result (chroot "/User/some/path.cljs" "/User/some")))
+      (is (not (str/ends-with? result "/User/some/path.cljs")))))
 
   (testing "is a well formed github URL"
     (let [origin-url "git@github.com:cool-guy/nice-project.git"
-          git-info {:origin-url origin-url :branch "main"}
+          git-info {:origin-url origin-url
+                    :branch "main"
+                    :git-root "/root"
+                    :editor {:document-path "/root/veg.tzt"}}
           result (build-github-url git-info)]
-      (is (re-matches #".*/blob/[^/]+/" result)))))
+      (is (re-matches #".*/blob/.*" result)))))
 
 
 (deftest test-parse-url-from-origin

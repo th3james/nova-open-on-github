@@ -1,13 +1,6 @@
-(ns open-on-github.nova-helpers)
-
-
-(defn get-parent-dir
-  [file-path]
-  (let [pattern #"^(.+)/[^/]+$"
-        matches (.exec pattern file-path)]
-    (if matches
-      (aget matches 1)
-      "No parent directory found")))
+(ns open-on-github.nova-helpers
+  (:require
+    [open-on-github.path :refer [get-parent-dir]]))
 
 
 (defn parse-editor
@@ -17,4 +10,3 @@
         parent-path (get-parent-dir path)]
     {:document-path path
      :document-parent-dir parent-path}))
-

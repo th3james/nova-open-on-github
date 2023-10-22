@@ -2,6 +2,7 @@
   (:require
     [cljs.core.async :refer [<! >! go go-loop chan]]
     [clojure.string :as str]
+    [open-on-github.path :refer [chroot]]
     [open-on-github.processes :refer [run-process]]))
 
 
@@ -16,14 +17,20 @@
   ([{:keys [document-parent-dir]} run-process-fn]
    (run-process-fn "git" ["config" "--get" "remote.origin.url"] document-parent-dir)))
 
+(defn get-root
+  ([editor] (get-root editor run-process))
+  ([{:keys [document-parent-dir]} run-process-fn]
+   (run-process-fn "git" ["rev-parse" "--show-toplevel"] document-parent-dir)))
+
 
 (defn get-git-info
-  ([editor] (get-git-info editor get-branch get-origin))
-  ([editor get-branch-fn get-origin-fn]
+  ([editor] (get-git-info editor get-branch get-origin get-root))
+  ([editor get-branch-fn get-origin-fn get-root-fn]
    (let [process-chan (chan)
          result-chan (chan 1)
          commands [[:branch get-branch-fn]
-                   [:origin-url get-origin-fn]]]
+                   [:origin-url get-origin-fn]
+                   [:git-root get-root-fn]]]
      (doseq [command commands]
        (let [val-name (first command)
              cmd-fn (second command)]
@@ -55,6 +62,13 @@
 
 (defn build-github-url
   [{branch :branch
-    origin-url :origin-url}]
+    origin-url :origin-url
+    git-root :git-root
+    editor :editor}]
 
-  (str (parse-url-from-origin origin-url) "blob/" branch "/"))
+  (let [doc-path (chroot (:document-path editor) git-root) ]
+    (str 
+      (parse-url-from-origin origin-url) 
+      "blob/" 
+      branch "/"
+      doc-path)))
