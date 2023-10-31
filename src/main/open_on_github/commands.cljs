@@ -5,7 +5,8 @@
     [open-on-github.git :refer [get-git-info build-github-url]]
     [open-on-github.logging :refer [log]]
     [open-on-github.nova-helpers :refer [parse-editor]]
-    [open-on-github.nova-interface :refer [open-url]]))
+    [open-on-github.nova-interface :refer [open-url]]
+    [open-on-github.result :refer [unwrap]]))
 
 
 (defn open-current-file
@@ -16,6 +17,8 @@
      (go
        (let [git-info (<! (get-git-info-fn editor))]
          (if (= (:status git-info) :ok)
-           (let [url (build-github-url git-info)]
-             (open-url-fn url))
+           (let [url-result (build-github-url git-info)]
+             (if (= (:status url-result) :ok)
+               (open-url-fn (unwrap url-result))
+               (log-fn :error (str "Error building url: " url-result))))
            (log-fn :error (str "Error getting git info: " git-info))))))))

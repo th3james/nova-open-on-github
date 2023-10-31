@@ -1,4 +1,6 @@
-(ns open-on-github.path)
+(ns open-on-github.path
+  (:require
+    [open-on-github.result :refer [ok error]]))
 
 
 (defn get-parent-dir
@@ -9,10 +11,11 @@
       (aget matches 1)
       "No parent directory found")))
 
+
 (defn chroot
   [file-path chroot-path]
   (let [pattern (js/RegExp. (str "^" chroot-path "/(.*)$"))
         matches (.exec pattern file-path)]
     (if matches
-      (aget matches 1)
-      "No chroot found")))
+      (ok (aget matches 1))
+      (error (str "Cannot chroot '" file-path "' to '" chroot-path "'")))))

@@ -3,7 +3,8 @@
     [cljs.core.async :refer [<! >! go go-loop chan]]
     [clojure.string :as str]
     [open-on-github.path :refer [chroot]]
-    [open-on-github.processes :refer [run-process]]))
+    [open-on-github.processes :refer [run-process]]
+    [open-on-github.result :refer [ok unwrap]]))
 
 
 (defn get-branch
@@ -16,6 +17,7 @@
   ([editor] (get-origin editor run-process))
   ([{:keys [document-parent-dir]} run-process-fn]
    (run-process-fn "git" ["config" "--get" "remote.origin.url"] document-parent-dir)))
+
 
 (defn get-root
   ([editor] (get-root editor run-process))
@@ -66,9 +68,12 @@
     git-root :git-root
     editor :editor}]
 
-  (let [doc-path (chroot (:document-path editor) git-root) ]
-    (str 
-      (parse-url-from-origin origin-url) 
-      "blob/" 
-      branch "/"
-      doc-path)))
+  (let [doc-path-result (chroot (:document-path editor) git-root)]
+    (if (= (:status doc-path-result) :error)
+      doc-path-result
+      (let [doc-path (unwrap doc-path-result)]
+        (ok (str
+            (parse-url-from-origin origin-url)
+            "blob/"
+            branch "/"
+            doc-path))))))

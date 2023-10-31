@@ -5,6 +5,8 @@
     [open-on-github.git-test]
     [open-on-github.nova-helpers-test]
     [open-on-github.processes-test]
+    [open-on-github.path-test]
+    [open-on-github.result-test]
     [open-on-github.integration-test]))
 
 
@@ -17,4 +19,6 @@
              'open-on-github.git-test
              'open-on-github.nova-helpers-test
              'open-on-github.processes-test
+             'open-on-github.path-test
+             'open-on-github.result-test
              'open-on-github.integration-test))

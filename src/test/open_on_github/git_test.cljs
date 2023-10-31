@@ -5,7 +5,7 @@
     [clojure.string :as str]
     [open-on-github.git :refer [get-git-info get-branch get-origin get-root build-github-url parse-url-from-origin]]
     [open-on-github.path :refer [chroot]]
-    [open-on-github.result :refer [ok error]]
+    [open-on-github.result :refer [ok error unwrap]]
     [open-on-github.test-helpers :refer [with-timeout]]))
 
 
@@ -174,33 +174,46 @@
 
 
 (deftest test-build-github-url
-  (testing "contains the branch name"
-    (let [branch-name "main"
-          git-info {:branch branch-name}
-          result (build-github-url git-info)]
-      (is (str/includes? result branch-name))))
+  (let [origin-url "git@github.com:cool-guy/nice-project.git"
+        branch-name "main"
+        git-root "/Users/bob/code/cmptr"
+        editor {:document-path (str git-root "/some/file.fish")}]
+    (testing "contains the branch name"
+      (let [git-info {:branch branch-name
+                      :git-root git-root
+                      :editor editor}
+            result (unwrap (build-github-url git-info))]
+        (is (str/includes? result branch-name))))
 
-  (testing "is prefixed with the github path built from the origin url"
-    (let [origin-url "git@github.com:cool-guy/nice-project.git"
-          git-info {:origin-url origin-url}
-          result (build-github-url git-info)]
-      (is (str/starts-with? result (parse-url-from-origin origin-url)))))
+    (testing "is prefixed with the github path built from the origin url"
+      (let [git-info {:origin-url origin-url
+                      :git-root git-root
+                      :editor editor}
+            result (unwrap (build-github-url git-info))]
+        (is (str/starts-with? result (parse-url-from-origin origin-url)))))
 
-  (testing "is suffixed with the document path chrooted to the git root"
-    (let [git-info {:editor {:document-path "/User/some/path.cljs"}
-                    :git-root "/User/some"}
-          result (build-github-url git-info)]
-      (is (str/ends-with? result (chroot "/User/some/path.cljs" "/User/some")))
-      (is (not (str/ends-with? result "/User/some/path.cljs")))))
+    (testing "is suffixed with the document path chrooted to the git root"
+      (let [git-info {:git-root git-root
+                      :editor editor}
+            result (unwrap (build-github-url git-info))]
+        (is (str/ends-with? result (:val (chroot (:document-path editor) git-root))))
+        (is (not (str/ends-with? result "/User/some/path.cljs")))))
 
-  (testing "is a well formed github URL"
-    (let [origin-url "git@github.com:cool-guy/nice-project.git"
-          git-info {:origin-url origin-url
-                    :branch "main"
-                    :git-root "/root"
-                    :editor {:document-path "/root/veg.tzt"}}
-          result (build-github-url git-info)]
-      (is (re-matches #".*/blob/.*" result)))))
+    (testing "fails when chroot fails"
+      (let [git-info {:editor {:document-path "/User/some/path.cljs"}
+                      :git-root "nope"}
+            result (build-github-url git-info)]
+        (is (= (:status result) :error))
+        (is (= (:error result) "Cannot chroot '/User/some/path.cljs' to 'nope'"))))
+
+    (testing "is a well formed github URL"
+      (let [origin-url "git@github.com:cool-guy/nice-project.git"
+            git-info {:origin-url origin-url
+                      :branch "main"
+                      :git-root "/root"
+                      :editor {:document-path "/root/veg.tzt"}}
+            result (unwrap (build-github-url git-info))]
+        (is (re-matches #".*/blob/.*" result))))))
 
 
 (deftest test-parse-url-from-origin
