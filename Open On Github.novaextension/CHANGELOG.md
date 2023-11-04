@@ -1,6 +1,9 @@
 ## Version 2.0
 
-Total rewrite of the project in ClojureScript. No new features, but new a concurrency model should lead to faster performance.
+Total rewrite of the project in ClojureScript.
+
+- Faster performance due to a better concurrency model
+- User $PATH is now respected, so `git` is no longer required to be in `/usr/bin/git`
 
 ## Version 1.0
 
