@@ -2,7 +2,8 @@
   (:require
     [open-on-github.commands :as commands]
     [open-on-github.dependencies :as dependencies]
-    [open-on-github.nova-interface :as nova-interface]))
+    [open-on-github.nova-interface :as nova-interface]
+    [open-on-github.logging :refer [log]]))
 
 
 (defn setup-commands
@@ -12,7 +13,7 @@
 
 (defn main
   []
-  (println "In ClojureScript main")
+  (log :debug "In ClojureScript main")
   (reset! dependencies/nova (nova-interface/RealNova.))
   (setup-commands @dependencies/nova)
-  (println "Finished ClojureScript main"))
+  (log :debug "Finished ClojureScript main"))
