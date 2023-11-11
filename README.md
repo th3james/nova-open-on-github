@@ -11,6 +11,5 @@ A [Nova](https://nova.app) extension for opening files on GitHub. Heavily inspir
 ### Planned
 
 - Open current line/selection on GitHub
-- Configurability of git binary path (`/usr/bin/git` is assumed, which is where Apple Command Line Tools put it)
 
 Leave a comment or issue to vote or request features.
