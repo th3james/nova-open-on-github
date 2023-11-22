@@ -10,7 +10,8 @@
  :builds
  {:extension {:target :node-library
               :output-to "Open On Github.novaextension/Scripts/core.js"
-              :exports-var open-on-github.core/main}
+              :exports-var open-on-github.core/main
+              :compiler-options {:externs ["externs/nova.js"]}}
 
   :repl {:target :node-script
          :output-to "tmp/repl.js"
