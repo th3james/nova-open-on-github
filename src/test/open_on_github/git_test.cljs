@@ -217,17 +217,34 @@
 
 
 (deftest test-parse-url-from-origin
-  (testing "starts with github.com"
-    (let [origin-url "git@github.com:cool-guy/nice-project.git"
-          result (parse-url-from-origin origin-url)]
-      (is (str/starts-with? result "https://github.com"))))
+  (testing "given git form"
+    (let [origin-url "git@github.com:cool-guy/nice-project.git"]
+      (testing "starts with github.com"
+        (let [result (parse-url-from-origin origin-url)]
+          (is (str/starts-with? result "https://github.com"))))
 
-  (testing "contains the repo owner"
-    (let [origin-url "git@github.com:cool-guy/nice-project.git"
-          result (parse-url-from-origin origin-url)]
-      (is (str/includes? result "cool-guy"))))
+      (testing "contains the repo owner"
+        (let [result (parse-url-from-origin origin-url)]
+          (is (str/includes? result "cool-guy"))))
 
-  (testing "ends with the repo name"
-    (let [origin-url "git@github.com:cool-guy/nice-project.git"
-          result (parse-url-from-origin origin-url)]
-      (is (str/ends-with? result "nice-project/")))))
+      (testing "ends with the repo name"
+        (let [result (parse-url-from-origin origin-url)]
+          (is (str/ends-with? result "nice-project/"))))))
+
+  (testing "given https form with username"
+    (let [origin-url "https://user@github.com/companyname/project.git"]
+      (testing "starts with github.com"
+        (let [result (parse-url-from-origin origin-url)]
+          (is (str/starts-with? result "https://github.com"))))
+
+      (testing "contains the repo owner"
+        (let [result (parse-url-from-origin origin-url)]
+          (is (str/includes? result "companyname"))))
+
+      (testing "does not contain the username"
+        (let [result (parse-url-from-origin origin-url)]
+          (is (not (str/includes? result "user")))))
+
+      (testing "ends with the repo name"
+        (let [result (parse-url-from-origin origin-url)]
+          (is (str/ends-with? result "project/")))))))
