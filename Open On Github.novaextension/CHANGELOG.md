@@ -1,3 +1,8 @@
+## Version 2.1
+
+- Handling for https origin schemes (thanks to @cartpauj for the report)
+    - https://github.com/th3james/nova-open-on-github/issues/3
+
 ## Version 2.0
 
 Total rewrite of the project in ClojureScript.
