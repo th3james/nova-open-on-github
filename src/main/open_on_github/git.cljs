@@ -55,11 +55,24 @@
      result-chan)))
 
 
+(defn extract-path
+  [origin-url]
+  (some-> origin-url
+          (str/replace #"^https://(.*\@)?github.com/" "")
+          (str/replace #"^git@github.com:" "")))
+
+
+(defn github-origin-from-path
+  [[_ owner repo]]
+  (str "https://github.com/" owner "/" repo "/"))
+
+
 (defn parse-url-from-origin
   [origin-url]
-  (let [split-origin (str/split origin-url #":(.*)/(.*).git")
-        [_ owner repo-name] split-origin]
-    (str "https://github.com/" owner "/" repo-name "/")))
+  (some->> origin-url
+           (extract-path)
+           (re-matches #"(.*)/(.*)\.git")
+           (github-origin-from-path)))
 
 
 (defn build-github-url
@@ -73,7 +86,7 @@
       doc-path-result
       (let [doc-path (unwrap doc-path-result)]
         (ok (str
-            (parse-url-from-origin origin-url)
-            "blob/"
-            branch "/"
-            doc-path))))))
+              (parse-url-from-origin origin-url)
+              "blob/"
+              branch "/"
+              doc-path))))))
