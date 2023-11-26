@@ -1,7 +1,3 @@
-// panic_nova_externs.js
-
-/** @externs */
-
 /**
  * @fileoverview Externs for the Panic Nova TextDocument attribute.
  * @externs
@@ -27,16 +23,17 @@ Nova.TextEditor.prototype.document;
 
 
 /**
+ * The document associated with the TextEditor.
+ * @type {Nova.Range}
+ */
+Nova.TextEditor.prototype.selectedRange;
+
+/**
  * Constructor for a TextDocument.
  * @constructor
  */
 Nova.TextDocument = function() {};
 
-/**
- * The text of the document.
- * @type {string}
- */
-Nova.TextDocument.prototype.text;
 
 /**
  * The path of the document.
@@ -45,13 +42,15 @@ Nova.TextDocument.prototype.text;
 Nova.TextDocument.prototype.path;
 
 /**
+ * The document associated with the TextEditor.
+ * @param {Nova.Range} x
+ * @return {Nova.Range}
+ */
+Nova.TextDocument.prototype.getLineRangeForRange = function(x) {};
+
+
+/**
  * Constructor for a TextEditor.
  * @constructor
  */
 Nova.Range = function() {};
-
-/**
- * The document associated with the TextEditor.
- * @type {Nova.TextDocument}
- */
-Nova.TextEditor.prototype.document;

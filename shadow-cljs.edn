@@ -16,9 +16,11 @@
   :repl {:target :node-script
          :output-to "tmp/repl.js"
          :main open-on-github.repl/main
+         :compiler-options {:externs ["externs/nova.js"]}
          :devtools {:after-load open-on-github.repl/main}}
 
   :test {:target :node-test
          :output-to "tmp/test.js"
          :main open-on-github.test-runner/run-all-tests
+         :compiler-options {:externs ["externs/nova.js"]}
          :autorun true}}}

@@ -4,7 +4,7 @@
 
 
 (defn parse-editor
-  [editor]
+  [^js/Nova.TextEditor editor]
   (let [document (.-document editor)
         path (.-path document)
         parent-path (get-parent-dir path)
