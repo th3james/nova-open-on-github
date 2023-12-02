@@ -54,3 +54,15 @@ Nova.TextDocument.prototype.getLineRangeForRange = function(x) {};
  * @constructor
  */
 Nova.Range = function() {};
+
+/**
+ * The start of the range.
+ * @type {number}
+ */
+Nova.Range.prototype.start;
+
+/**
+ * The end of the range.
+ * @type {number}
+ */
+Nova.Range.prototype.end;
