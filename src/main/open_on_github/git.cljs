@@ -59,7 +59,7 @@
   [origin-url]
   (some-> origin-url
           (str/replace #"^https://(.*\@)?github.com/" "")
-          (str/replace #"^git@github.com:" "")))
+          (str/replace #"^(ssh://)?git@github.com:" "")))
 
 
 (defn github-origin-from-path
