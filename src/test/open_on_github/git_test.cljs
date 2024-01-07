@@ -237,7 +237,7 @@
 
   (testing "given git form with ssh protocol"
     (testing "with username"
-      (let [origin-url "ssh://git@github.com:cool-guy/nice-project.git"]
+      (let [origin-url "git@github.com:cool-guy/nice-project."]
         (testing "starts with github.com"
           (let [result (parse-url-from-origin origin-url)]
             (is (str/starts-with? result "https://github.com"))))
