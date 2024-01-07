@@ -236,26 +236,49 @@
           (is (str/ends-with? result "nice-project/"))))))
 
   (testing "given git form with ssh protocol"
-    (let [origin-url "ssh://git@github.com:cool-guy/nice-project.git"]
-      (testing "starts with github.com"
-        (let [result (parse-url-from-origin origin-url)]
-          (is (str/starts-with? result "https://github.com"))))
+    (testing "with username"
+      (let [origin-url "ssh://git@github.com:cool-guy/nice-project.git"]
+        (testing "starts with github.com"
+          (let [result (parse-url-from-origin origin-url)]
+            (is (str/starts-with? result "https://github.com"))))
 
-      (testing "contains the repo owner"
-        (let [result (parse-url-from-origin origin-url)]
-          (is (str/includes? result "cool-guy"))))
+        (testing "contains the repo owner"
+          (let [result (parse-url-from-origin origin-url)]
+            (is (str/includes? result "cool-guy"))))
 
-      (testing "does not contain ssh://"
-        (let [result (parse-url-from-origin origin-url)]
-          (is (not (str/includes? result "ssh")))))
+        (testing "does not contain ssh://"
+          (let [result (parse-url-from-origin origin-url)]
+            (is (not (str/includes? result "ssh")))))
 
-      (testing "does not contain the username"
-        (let [result (parse-url-from-origin origin-url)]
-          (is (not (str/includes? result "git@")))))
+        (testing "does not contain the username"
+          (let [result (parse-url-from-origin origin-url)]
+            (is (not (str/includes? result "git@")))))
 
-      (testing "ends with the repo name"
-        (let [result (parse-url-from-origin origin-url)]
-          (is (str/ends-with? result "nice-project/"))))))
+        (testing "ends with the repo name"
+          (let [result (parse-url-from-origin origin-url)]
+            (is (str/ends-with? result "nice-project/"))))))
+
+    (testing "without username"
+      (let [origin-url "ssh://git@github.com/company/project.git"]
+        (testing "starts with github.com"
+          (let [result (parse-url-from-origin origin-url)]
+            (is (str/starts-with? result "https://github.com"))))
+
+        (testing "contains the repo owner"
+          (let [result (parse-url-from-origin origin-url)]
+            (is (str/includes? result "company"))))
+
+        (testing "does not contain ssh://"
+          (let [result (parse-url-from-origin origin-url)]
+            (is (not (str/includes? result "ssh")))))
+
+        (testing "does not contain the username"
+          (let [result (parse-url-from-origin origin-url)]
+            (is (not (str/includes? result "git@")))))
+
+        (testing "ends with the repo name"
+          (let [result (parse-url-from-origin origin-url)]
+            (is (str/ends-with? result "project")))))))
 
   (testing "given https form with username"
     (let [origin-url "https://user@github.com/companyname/project.git"]
